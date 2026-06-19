@@ -1,0 +1,127 @@
+<canvas id="bg-canvas"></canvas>
+
+<script>
+  (function() {
+    var canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W, H;
+    var particles = [];
+    var lines = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* Particles */
+    var COLORS = ['#66d9ed', '#e31b6d', '#c586c0', '#569cd6', '#ff6b2b', '#6a9955', '#ce9178'];
+    for (var i = 0; i < 80; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        r: 1 + Math.random() * 2.5,
+        c: COLORS[Math.floor(Math.random() * COLORS.length)],
+        a: 0.2 + Math.random() * 0.6,
+      });
+    }
+
+    /* Diagonal flowing lines */
+    var lineCount = 30;
+    for (var j = 0; j < lineCount; j++) {
+      lines.push({
+        x: Math.random() * W * 1.5 - W * 0.25,
+        y: Math.random() * H * 1.5 - H * 0.25,
+        len: 40 + Math.random() * 120,
+        speed: 0.2 + Math.random() * 0.5,
+        a: 0.04 + Math.random() * 0.08,
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      /* Diagonal lines */
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (var k = 0; k < lines.length; k++) {
+        var l = lines[k];
+        l.x += l.speed * 0.3;
+        l.y += l.speed * 0.3;
+        if (l.x > W + 200) { l.x = -200; l.y = Math.random() * H; }
+        if (l.y > H + 200) { l.y = -200; l.x = Math.random() * W; }
+        ctx.globalAlpha = l.a;
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y);
+        ctx.lineTo(l.x - l.len * 0.7, l.y + l.len * 0.7);
+        ctx.stroke();
+      }
+
+      /* Subtle grid */
+      ctx.globalAlpha = 0.04;
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 0.5;
+      var step = 60;
+      ctx.beginPath();
+      for (var gx = 0; gx <= W; gx += step) {
+        ctx.moveTo(gx, 0); ctx.lineTo(gx, H);
+      }
+      for (var gy = 0; gy <= H; gy += step) {
+        ctx.moveTo(0, gy); ctx.lineTo(W, gy);
+      }
+      ctx.stroke();
+
+      /* Particles */
+      for (var p = 0; p < particles.length; p++) {
+        var pt = particles[p];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        if (pt.x < 0) pt.x = W;
+        if (pt.x > W) pt.x = 0;
+        if (pt.y < 0) pt.y = H;
+        if (pt.y > H) pt.y = 0;
+
+        ctx.globalAlpha = pt.a;
+        ctx.fillStyle = pt.c;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        /* Connect nearby particles with faint lines */
+        for (var q = p + 1; q < particles.length; q++) {
+          var qt = particles[q];
+          var dx = pt.x - qt.x;
+          var dy = pt.y - qt.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.globalAlpha = 0.06 * (1 - dist / 120);
+            ctx.strokeStyle = pt.c;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(pt.x, pt.y);
+            ctx.lineTo(qt.x, qt.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+  })();
+</script>
+
+<style>
+  #bg-canvas {
+    position: fixed; inset: 0; z-index: -15;
+    width: 100%; height: 100%;
+    display: block;
+    background: #121216;
+  }
+</style>

@@ -1,0 +1,10 @@
+---
+interface Props { label: string; variant?: "default" | "accent" | "subtle"; }
+const { label, variant = "default" } = Astro.props;
+const s: Record<string, string> = {
+  default: "border-white/10 text-white/45",
+  accent: "border-[#66d9ed]/30 text-[#66d9ed]",
+  subtle: "border-white/5 text-white/30",
+};
+---
+<span class="inline-block rounded-full border px-3 py-0.5 font-mono text-xs tracking-wider {s[variant]}">{label}</span>

@@ -1,0 +1,19 @@
+---
+interface Props {
+  label: string;
+  accent?: "pink" | "cyan" | "orange";
+  class?: string;
+}
+
+const { label, accent = "pink", class: className = "" } = Astro.props;
+const accentColors: Record<string, string> = {
+  pink: "#e31b6d",
+  cyan: "#66d9ed",
+  orange: "#ff6b2b",
+};
+---
+
+<h2 class="section-heading {className}">
+  <span class="accent-bar" style="background:{accentColors[accent]};"></span>
+  {label}
+</h2>

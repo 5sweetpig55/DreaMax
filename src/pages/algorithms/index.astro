@@ -1,0 +1,43 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+---
+
+<PageLayout
+  title="Algorithm & Data Structure — DreaMax | Sorting, Indexing & Data Structures"
+  description="Recent breakthroughs in algorithms and data structures: stable sorting with zSort, RL-powered R-Trees, and Tarjan's Zip-zip trees. Problem solutions and complexity analysis."
+>
+  <section class="min-h-screen px-6 pt-32 pb-24">
+    <div class="mx-auto" style="max-width:960px;">
+      <h1 class="section-heading" style="margin-bottom:8px;">
+        <span class="accent-bar" style="background:#ff6b2b;"></span>Algorithm &amp; Data Structure
+      </h1>
+      <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">Recent breakthroughs in algorithms, data structures, and theoretical CS.</p>
+
+      <div class="flex flex-col gap-4" style="margin-top:48px;">
+        <div class="card rounded-sm border border-white/8 bg-[#131316]/60 backdrop-blur-sm p-6">
+          <div>
+            <h2 class="font-sans text-base font-semibold text-white">zSort: Stable Distribution Sort using Z-Score Partitioning</h2>
+            <p class="font-mono text-xs" style="color:#ff6b2b; margin-top:6px;">arXiv:2605.14419 · May 2026</p>
+            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5); margin-top:10px; font-weight:300;">An adaptive stable sorting algorithm using z-score-based partitioning that avoids the traditional "stability tax." Achieves 3x–4.5x speedups over comparison-based stable sorts while matching the throughput of unstable algorithms.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-sm border border-white/8 bg-[#131316]/60 backdrop-blur-sm p-6">
+          <div>
+            <h2 class="font-sans text-base font-semibold text-white">GSAR-Tree: Global Structure-Aware R-Tree using Deep RL and Self-Play</h2>
+            <p class="font-mono text-xs" style="color:#ff6b2b; margin-top:6px;">ScienceDirect · 2026</p>
+            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5); margin-top:10px; font-weight:300;">Replaces heuristic R-Tree construction with deep reinforcement learning + self-play. The RL agent learns globally optimal insertion decisions, reducing node accesses by 37.9%–1193.8% on real-world OpenStreetMap data.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-sm border border-white/8 bg-[#131316]/60 backdrop-blur-sm p-6">
+          <div>
+            <h2 class="font-sans text-base font-semibold text-white">Zip-zip Trees: Making Zip Trees More Balanced, Biased, Compact, or Persistent</h2>
+            <p class="font-mono text-xs" style="color:#ff6b2b; margin-top:6px;">Algorithmica · Jun 2026 · Tarjan et al.</p>
+            <p class="text-sm leading-relaxed" style="color:rgba(255,255,255,0.5); margin-top:10px; font-weight:300;">Overcomes key bias in zip trees using only O(log log n) bits per node. Matches treap expected depth, with support for history independence, biased variants, and partial persistence — all with O(n) space overhead.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>

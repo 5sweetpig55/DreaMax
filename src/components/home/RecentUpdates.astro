@@ -1,0 +1,19 @@
+---
+import SectionHeading from "../ui/SectionHeading.astro";
+import Timeline from "../ui/Timeline.astro";
+import { timeline } from "../../data/timeline";
+---
+
+<section class="px-6 py-24">
+  <div class="mx-auto" style="max-width:1100px;">
+    <SectionHeading label="Recent Updates" accent="orange" />
+
+    <div style="margin-top:48px;">
+      {timeline.length > 0 ? (
+        <Timeline entries={timeline} max={5} />
+      ) : (
+        <p class="font-mono text-sm italic text-white/20">No recent updates yet.</p>
+      )}
+    </div>
+  </div>
+</section>

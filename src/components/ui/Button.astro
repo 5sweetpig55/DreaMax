@@ -1,0 +1,9 @@
+---
+interface Props { href?: string; variant?: "pink" | "ghost"; class?: string; }
+const { href, variant = "ghost", class: className = "" } = Astro.props;
+const base = "btn";
+const v: Record<string, string> = { pink: "btn-pink", ghost: "btn-ghost" };
+const cls = `${base} ${v[variant]} ${className}`;
+---
+
+{href ? <a href={href} class={cls}><slot /></a> : <button class={cls}><slot /></button>}
