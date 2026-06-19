@@ -66,24 +66,24 @@ A cyber-programmer aesthetic personal website built with Astro + Tailwind CSS, s
 
 ## 🧞 Commands
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Install dependencies                             |
-| `npm run dev`             | Start dev server at `localhost:4321`             |
-| `npm run build`           | Build production site to `./dist/`               |
-| `npm run preview`         | Preview build locally before deployment          |
+| Command                   | Action                                          |
+| :------------------------ | :---------------------------------------------- |
+| `npm install`             | Install dependencies                            |
+| `npm run dev`             | Start dev server at `localhost:4321`            |
+| `npm run build`           | Build production site to `./dist/`              |
+| `npm run preview`         | Preview build locally before deployment         |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 
 ---
 
 ## 🛠 Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| [Astro](https://astro.build) v6 | Static site generation, View Transitions |
-| [Tailwind CSS](https://tailwindcss.com) v4 | Utility-first styling |
-| [astro-sitemap](https://github.com/alextim/astro-sitemap) | Auto-generated sitemap.xml |
-| [Poppins](https://fonts.google.com/specimen/Poppins) + [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | Primary & mono fonts |
+| Technology    | Purpose                                 |
+| :------------ | :-------------------------------------- |
+| Astro v6      | Static site generation, View Transitions |
+| Tailwind CSS v4 | Utility-first styling                 |
+| astro-sitemap | Auto-generated sitemap.xml              |
+| Poppins + JetBrains Mono | Primary & mono fonts      |
 
 ---
 
@@ -91,22 +91,23 @@ A cyber-programmer aesthetic personal website built with Astro + Tailwind CSS, s
 
 This project outputs a fully static `dist/` folder. Deploy to any static host:
 
-**Cloudflare Pages** (recommended):
+### Cloudflare Pages (recommended)
 1. Push to GitHub
 2. Connect repo in Cloudflare Pages
 3. Build command: `npm run build`
 4. Build output: `dist`
 
-**Vercel**:
+### Vercel
 1. Push to GitHub
 2. Import repo in Vercel
-3. Framework preset: Astro
+3. Framework preset: **Astro**
 
 ---
 
 ## 📝 Customization
 
 Edit `src/data/` files to update your:
+
 - **profile.ts** — Name, email, bio, avatar path, CV path, social links
 - **featured.ts** — Research papers and projects
 - **timeline.ts** — Recent updates
