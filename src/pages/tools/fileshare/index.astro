@@ -174,20 +174,87 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     }
   }
 
-  // ── 登录/注册 ──
+  // ── 登录/注册弹窗 ──
   btnAuth.addEventListener('click', function(){
     if(session){
-      // 退出
       session = null;
       localStorage.removeItem('dreamax_sb_session');
       updateUI(false, '');
       return;
     }
-    // 跳转 Supabase 登录页
-    var redirectUrl = window.location.origin + '/tools/fileshare';
-    var loginUrl = SUPABASE_URL + '/auth/v1/authorize?provider=email&redirect_to=' + encodeURIComponent(redirectUrl);
-    window.location.href = loginUrl;
+    showAuthModal();
   });
+
+  function showAuthModal(){
+    var overlay = document.createElement('div');
+    overlay.id = 'auth-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML = '        <div style="background:#131316;border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:32px;width:100%;max-width:380px;">          <h2 class="font-sans text-xl font-semibold text-white" style="margin:0 0 4px;" id="auth-title">登录</h2>          <p class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:20px;" id="auth-sub">输入邮箱和密码</p>          <div style="margin-bottom:12px;">            <input type="email" id="auth-email" placeholder="邮箱" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:JetBrains Mono,monospace;font-size:13px;outline:none;box-sizing:border-box;" />          </div>          <div style="margin-bottom:20px;">            <input type="password" id="auth-pwd" placeholder="密码" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:JetBrains Mono,monospace;font-size:13px;outline:none;box-sizing:border-box;" />          </div>          <div id="auth-error" class="font-mono text-xs" style="color:#e31b6d;margin-bottom:10px;display:none;"></div>          <button id="auth-submit" class="btn btn-pink" style="width:100%;padding:12px 0;justify-content:center;">登录</button>          <p class="font-mono text-xs" style="color:rgba(255,255,255,0.2);text-align:center;margin-top:14px;cursor:pointer;" id="auth-toggle">没有账号？<span style="color:#66d9ed;">注册</span></p>          <p class="font-mono text-xs" style="color:rgba(255,255,255,0.15);text-align:center;margin-top:4px;cursor:pointer;" id="auth-close">取消</p>        </div>';
+    document.body.appendChild(overlay);
+
+    var isLogin = true;
+    var emailInput = document.getElementById('auth-email');
+    var pwdInput = document.getElementById('auth-pwd');
+    var titleEl = document.getElementById('auth-title');
+    var subEl = document.getElementById('auth-sub');
+    var submitBtn = document.getElementById('auth-submit');
+    var errorEl = document.getElementById('auth-error');
+    var toggleEl = document.getElementById('auth-toggle');
+
+    function toggleMode(){
+      isLogin = !isLogin;
+      titleEl.textContent = isLogin ? '登录' : '注册';
+      subEl.textContent = isLogin ? '输入邮箱和密码' : '注册后将收到验证邮件';
+      submitBtn.textContent = isLogin ? '登录' : '注册';
+      toggleEl.innerHTML = isLogin ? '没有账号？<span style="color:#66d9ed;">注册</span>' : '已有账号？<span style="color:#66d9ed;">登录</span>';
+      errorEl.style.display = 'none';
+    }
+
+    toggleEl.addEventListener('click', toggleMode);
+    document.getElementById('auth-close').addEventListener('click', function(){ overlay.remove(); });
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+
+    submitBtn.addEventListener('click', async function(){
+      var email = emailInput.value.trim();
+      var pwd = pwdInput.value.trim();
+      if(!email || !pwd){ errorEl.textContent = '请填写完整'; errorEl.style.display='block'; return; }
+      errorEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = '处理中...';
+
+      try {
+        if(isLogin){
+          // 登录
+          var res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pwd })
+          });
+          var data = await res.json();
+          if(data.error){ errorEl.textContent = data.error_description || data.msg || '登录失败'; errorEl.style.display='block'; submitBtn.disabled=false; submitBtn.textContent='登录'; return; }
+          session = { access_token: data.access_token, refresh_token: data.refresh_token, user: data.user };
+          localStorage.setItem('dreamax_sb_session', JSON.stringify(session));
+          overlay.remove();
+          updateUI(true, data.user.email);
+        } else {
+          // 注册
+          var res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pwd })
+          });
+          var data = await res.json();
+          if(data.error){ errorEl.textContent = data.error_description || data.msg || '注册失败'; errorEl.style.display='block'; submitBtn.disabled=false; submitBtn.textContent='注册'; return; }
+          alert('注册成功！请查看邮箱验证邮件（可能被归类到垃圾箱），验证后即可登录。');
+          overlay.remove();
+        }
+      } catch(err){
+        errorEl.textContent = '网络错误'; errorEl.style.display='block';
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = isLogin ? '登录' : '注册';
+    });
+  }
 
   // ── 上传 ──
   btnUpload.addEventListener('click', async function(){
