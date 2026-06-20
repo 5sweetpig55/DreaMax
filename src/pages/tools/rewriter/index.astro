@@ -10,17 +10,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       <h1 class="section-heading" style="margin:24px 0 8px;">
         <span class="accent-bar" style="background:#e31b6d;"></span>Paper Rewriter
       </h1>
-      <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">上传文档，模拟查重 + AI 改写降重。需要免费 Hugging Face Token。</p>
-
-      <!-- API Token input -->
-      <div class="token-area" style="margin-top:24px;padding:16px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);">
-        <label class="ctrl-label" style="margin-bottom:6px;display:block;">Hugging Face API Token</label>
-        <div class="flex gap-3">
-          <input type="text" id="hf-token" placeholder="hf_xxxxxxxxxxxxxxxxxxxx" style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;" />
-          <a href="https://huggingface.co/settings/tokens" target="_blank" class="btn btn-ghost" style="padding:10px 16px;font-size:12px;white-space:nowrap;">获取 Token →</a>
-        </div>
-        <p class="font-mono text-xs" style="color:rgba(255,255,255,0.2);margin-top:6px;">免费，去 huggingface.co/settings/tokens 创建，不需要付费</p>
-      </div>
+      <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">上传文档，模拟查重 + AI 改写降重。内置 API 无需配置。</p>
 
       <!-- Upload / Paste -->
       <div style="margin-top:24px;">
@@ -88,11 +78,9 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
 <script>
 (function(){
-  var HF_TOKEN = '';
+  var HF_TOKEN = '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';
   var HF_MODEL = 'google/flan-t5-large';
   var originalText = '';
-
-  var tokenInput = document.getElementById('hf-token');
   var btnAnalyze = document.getElementById('btn-analyze');
   var btnRewrite = document.getElementById('btn-rewrite');
   var resultArea = document.getElementById('result-area');
@@ -123,12 +111,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       reader.readAsText(e.target.files[0]);
     }
   });
-
-  function getHF(){
-    HF_TOKEN = tokenInput.value.trim();
-    if(!HF_TOKEN){ alert('请输入 Hugging Face Token'); return false; }
-    return true;
-  }
 
   /* ── Random plagiarism check ── */
   btnAnalyze.addEventListener('click', function(){
@@ -171,7 +153,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
   /* ── AI Rewrite ── */
   btnRewrite.addEventListener('click', function(){
-    if(!getHF()) return;
     if(!originalText){ alert('请先查重'); return; }
 
     btnRewrite.disabled = true;

@@ -16,7 +16,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
           <input type="password" id="login-pwd" placeholder="密码" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:20px;" />
           <button id="btn-login" class="btn btn-pink" style="width:100%;padding:12px 0;justify-content:center;">进入</button>
           <div id="login-err" class="font-mono text-xs" style="color:#e31b6d;margin-top:8px;display:none;">用户名或密码错误</div>
-          <div class="font-mono text-xs" style="color:rgba(255,255,255,0.15);margin-top:16px;">管理员: admin / 123456 &nbsp;|&nbsp; 用户自行注册</div>
+          <div class="font-mono text-xs" style="color:rgba(255,255,255,0.15);margin-top:16px;">管理员: admin / 123456</div>
           <button id="btn-register" class="btn btn-ghost" style="margin-top:8px;padding:6px 16px;font-size:11px;">注册新账号</button>
         </div>
       </div>
@@ -24,12 +24,10 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       <!-- Main App -->
       <div id="main-app" style="display:none;">
         <div class="flex items-center justify-between" style="margin-bottom:8px;">
-          <h1 class="section-heading" style="margin:0;">
-            <span class="accent-bar" style="background:#e31b6d;"></span>自律打卡器
-          </h1>
+          <h1 class="section-heading" style="margin:0;"><span class="accent-bar" style="background:#e31b6d;"></span>自律打卡器</h1>
           <span id="current-user" class="font-mono text-xs" style="color:rgba(255,255,255,0.25);"></span>
         </div>
-        <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">每日记录 英语学习 自我管理</p>
+        <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">每日记录 · 英语学习 · 自我管理</p>
 
         <div class="flex gap-2" style="margin-top:28px;border-bottom:1px solid rgba(255,255,255,0.06);">
           <button class="tab-b active" data-tab="checkin">打卡</button>
@@ -43,28 +41,29 @@ import PageLayout from "../../../layouts/PageLayout.astro";
           <div class="flex flex-col md:flex-row gap-6">
             <div class="flex-1 p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);">
               <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">今日状态</div>
-              <div id="streak-display" class="font-sans text-2xl font-bold" style="margin-top:8px;color:#66d9ed;">--</div>
-              <div id="msg-display" class="font-mono text-sm" style="margin-top:8px;color:rgba(255,255,255,0.5);line-height:1.6;min-height:60px;">加载中...</div>
+              <div id="streak-display" class="font-sans text-xl font-bold" style="margin-top:8px;color:#66d9ed;">--</div>
+              <div id="msg-display" class="font-mono text-sm" style="margin-top:8px;color:rgba(255,255,255,0.5);line-height:1.7;min-height:70px;">加载中...</div>
               <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
                 <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:10px;">今天做了吗？</div>
                 <div class="flex gap-3">
-                  <button id="btn-yes" class="btn btn-pink" style="padding:10px 24px;font-size:13px;">做了</button>
-                  <button id="btn-no" class="btn btn-ghost" style="padding:10px 24px;font-size:13px;">没有</button>
+                  <button class="btn btn-pink action-btn" data-action="yes" style="padding:10px 24px;font-size:13px;">做了</button>
+                  <button class="btn btn-ghost action-btn" data-action="no" style="padding:10px 24px;font-size:13px;">没有</button>
                 </div>
                 <div id="count-area" style="display:none;margin-top:12px;">
-                  <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:6px;">做了几次？</div>
-                  <div class="flex gap-2">
-                    <button class="cnt-btn" data-n="1">1次</button>
-                    <button class="cnt-btn" data-n="2">2次</button>
-                    <button class="cnt-btn" data-n="3">3次</button>
-                    <button class="cnt-btn" data-n="4">4+次</button>
+                  <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:6px;">今天第几次？</div>
+                  <div class="flex gap-2 flex-wrap">
+                    <button class="cnt-btn" data-n="1">第1次</button>
+                    <button class="cnt-btn" data-n="2">第2次</button>
+                    <button class="cnt-btn" data-n="3">第3次</button>
+                    <button class="cnt-btn" data-n="4">第4次</button>
+                    <button class="cnt-btn" data-n="5">第5次+</button>
                   </div>
                 </div>
               </div>
             </div>
             <div class="flex-1 p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);">
               <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">本周统计</div>
-              <div id="week-stats" style="margin-top:12px;">
+              <div style="margin-top:12px;">
                 <div class="flex justify-between py-2" style="border-bottom:1px solid rgba(255,255,255,0.04);">
                   <span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">本周打卡</span>
                   <span id="week-count" class="font-mono text-sm" style="color:rgba(255,255,255,0.6);">0天</span>
@@ -74,12 +73,12 @@ import PageLayout from "../../../layouts/PageLayout.astro";
                   <span id="month-count" class="font-mono text-sm" style="color:rgba(255,255,255,0.6);">0天</span>
                 </div>
                 <div class="flex justify-between py-2" style="border-bottom:1px solid rgba(255,255,255,0.04);">
-                  <span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">最高连续</span>
-                  <span id="best-streak" class="font-mono text-sm" style="color:#66d9ed;">0天</span>
+                  <span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">当前连续</span>
+                  <span id="cur-streak" class="font-mono text-sm" style="color:#66d9ed;">0天</span>
                 </div>
                 <div class="flex justify-between py-2">
-                  <span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">当前连续</span>
-                  <span id="cur-streak" class="font-mono text-sm" style="color:#e31b6d;">0天</span>
+                  <span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">最长连续</span>
+                  <span id="best-streak" class="font-mono text-sm" style="color:#e31b6d;">0天</span>
                 </div>
               </div>
             </div>
@@ -90,18 +89,17 @@ import PageLayout from "../../../layouts/PageLayout.astro";
         <div id="tab-words" class="tab-c" style="display:none;margin-top:24px;">
           <div class="flex items-center justify-between mb-4" style="border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:12px;">
             <div>
-              <span class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">今日单词</span>
+              <span class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">六级词汇</span>
               <span class="font-mono text-xs" style="color:#e31b6d;margin-left:12px;">今天忍不住了吗？来背单词！</span>
             </div>
             <div class="flex gap-2">
               <span id="word-progress" class="font-mono text-xs" style="color:rgba(255,255,255,0.2);padding:4px 0;">0/10</span>
-              <button id="btn-word-prev" class="btn btn-ghost" style="padding:4px 10px;font-size:10px;">←</button>
-              <button id="btn-word-next" class="btn btn-ghost" style="padding:4px 10px;font-size:10px;">→</button>
+              <button class="btn btn-ghost word-nav" data-dir="prev" style="padding:4px 10px;font-size:10px;">←</button>
+              <button class="btn btn-ghost word-nav" data-dir="next" style="padding:4px 10px;font-size:10px;">→</button>
             </div>
           </div>
           <div id="word-card" class="p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);min-height:320px;">
             <div id="word-question">
-              <div class="font-mono text-xs" style="color:rgba(255,255,255,0.2);margin-bottom:8px;"></div>
               <div id="word-en" class="font-sans text-xl font-semibold text-white"></div>
               <div id="word-options" class="flex flex-col gap-2" style="margin-top:16px;"></div>
             </div>
@@ -120,15 +118,13 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
         <!-- Tab: History -->
         <div id="tab-history" class="tab-c" style="display:none;margin-top:24px;">
-          <div class="flex items-center justify-between mb-4">
-            <span class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">全部打卡记录</span>
-          </div>
-          <div id="history-list" style="display:flex;flex-direction:column;gap:4px;"></div>
+          <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:12px;">打卡记录表</div>
+          <div id="history-table-wrap" style="overflow-x:auto;"></div>
         </div>
 
         <!-- Tab: Admin -->
         <div id="tab-admin" class="tab-c" style="display:none;margin-top:24px;">
-          <div class="font-mono text-xs" style="color:#66d9ed;margin-bottom:16px;">所有用户打卡记录</div>
+          <div class="font-mono text-xs" style="color:#66d9ed;margin-bottom:16px;">所有用户完整记录</div>
           <div id="admin-list"></div>
         </div>
       </div>
@@ -140,65 +136,72 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 (function(){
   var SUPABASE_URL = 'https://bunumbcdivevvtjvsuvk.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34';
-
   var USER_KEY = 'dreamax_checkin_user';
   var ADMIN_USERS = ['admin','dreamax'];
-
   var loggedUser = sessionStorage.getItem(USER_KEY);
-  var db = null;
+  var cachedRecords = [];
+  var SHAME = [
+    '你又破功了... 你的未来老婆正在扣分，分快扣没了！',
+    '手都起茧了吧？心疼你未来对象三秒... 不对，一秒就够了',
+    '连续作战？！你是想凭实力单身到老吗？',
+    '牛啊牛啊，这频率... 你不怕以后交公粮交不出来吗？',
+    '兄弟你这样真的不行，到时候女朋友都嫌弃你',
+    '又来了？你这是要把自家兄弟累死啊！',
+    '服了你了，你比生产队的驴还能干',
+    '你是不是觉得自己很行？你不行！你很虚！',
+    '我替你未来的老婆说一句：求你放过你自己！',
+    '别人一天一次，你一天五次？你是在挑战吉尼斯吗？',
+  ];
+  var ENC = [
+    '好样的！今天又管住手了，你是真正的时间管理大师',
+    '自律的男人最帅！继续保持，女神迟早是你的',
+    '坚持住！今天没有破戒，奖励自己一杯奶茶',
+    '很好！你正在变成更好的自己，你的未来对象很欣慰',
+  ];
 
-  function supabaseFetch(path, opts){
-    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-        ...(opts && opts.headers || {})
-      },
-      ...(opts || {})
+  supabaseFetch = function(path, opts){
+    return fetch(SUPABASE_URL+'/rest/v1/'+path, {
+      headers: {'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts&&opts.headers||{})},
+      ...(opts||{})
     });
-  }
+  };
 
   if(loggedUser) initApp();
 
-  document.getElementById('btn-login').addEventListener('click', login);
-  document.getElementById('login-name').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
-  document.getElementById('login-pwd').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
+  document.getElementById('btn-login').addEventListener('click',login);
+  document.getElementById('login-name').addEventListener('keydown',function(e){if(e.key==='Enter')login();});
+  document.getElementById('login-pwd').addEventListener('keydown',function(e){if(e.key==='Enter')login();});
 
   function login(){
-    var name = document.getElementById('login-name').value.trim();
-    var pwd = document.getElementById('login-pwd').value.trim();
-    var users = { admin:'123456', dreamax:'dreamax520' };
-    if(users[name] && users[name]===pwd){
-      sessionStorage.setItem(USER_KEY, name);
-      loggedUser = name;
-      document.getElementById('login-gate').style.display = 'none';
-      document.getElementById('main-app').style.display = 'block';
+    var name=document.getElementById('login-name').value.trim();
+    var pwd=document.getElementById('login-pwd').value.trim();
+    var users={admin:'123456',dreamax:'dreamax520'};
+    if(users[name]&&users[name]===pwd){
+      sessionStorage.setItem(USER_KEY,name);loggedUser=name;
+      document.getElementById('login-gate').style.display='none';
+      document.getElementById('main-app').style.display='block';
       initApp();
     } else {
-      document.getElementById('login-err').style.display = 'block';
+      document.getElementById('login-err').style.display='block';
     }
   }
 
-  document.getElementById('btn-register').addEventListener('click', function(){
-    var name = prompt('请输入新用户名:');
-    if(!name) return;
-    var pwd = prompt('请输入密码:');
-    if(!pwd) return;
-    sessionStorage.setItem(USER_KEY, name);
-    loggedUser = name;
-    document.getElementById('login-gate').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
+  document.getElementById('btn-register').addEventListener('click',function(){
+    var name=prompt('新用户名:');if(!name)return;
+    var pwd=prompt('密码:');if(!pwd)return;
+    sessionStorage.setItem(USER_KEY,name);loggedUser=name;
+    document.getElementById('login-gate').style.display='none';
+    document.getElementById('main-app').style.display='block';
     initApp();
   });
 
-  function isAdmin(){ return ADMIN_USERS.includes(loggedUser); }
+  function isAdmin(){return ADMIN_USERS.includes(loggedUser);}
 
   function initApp(){
-    document.getElementById('current-user').textContent = loggedUser + (isAdmin() ? ' (管理员)' : '');
-    if(isAdmin()) document.getElementById('admin-tab').style.display = '';
-    loadCheckin();
+    document.getElementById('current-user').textContent=loggedUser+(isAdmin()?' (管理员)':'');
+    if(isAdmin()) document.getElementById('admin-tab').style.display='';
+    loadData();
+    bindActions();
   }
 
   function todayStr(){
@@ -206,136 +209,116 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
   }
 
-  var cachedRecords = [];
-
-  async function loadCheckin(){
-    var q = '/checkin_records?order=date.asc';
-    var res = await supabaseFetch(q);
-    var all = await res.json() || [];
-    cachedRecords = all;
-
-    var myRecords = isAdmin() ? all : all.filter(function(r){ return r.username === loggedUser; });
-
-    var today = todayStr();
-    var todayRecords = myRecords.filter(function(r){ return r.date === today; });
-
-    var streakCount = calcStreak(myRecords);
-    var bestS = calcBestStreak(myRecords);
-    var weekStart = getWeekStart();
-    var monthStr = today.substring(0,7);
-
-    document.getElementById('week-count').textContent = myRecords.filter(function(r){ return r.did && r.date >= weekStart; }).length + '天';
-    document.getElementById('month-count').textContent = myRecords.filter(function(r){ return r.did && r.date.substring(0,7) === monthStr; }).length + '天';
-    document.getElementById('best-streak').textContent = bestS + '天';
-    document.getElementById('cur-streak').textContent = streakCount + '天';
-
-    var streakEl = document.getElementById('streak-display');
-    var msgEl = document.getElementById('msg-display');
-
-    if(todayRecords.length > 0 && todayRecords[0].did){
-      var n = todayRecords[0].count;
-      streakEl.textContent = '今日已破戒 ('+n+'次)';
-      streakEl.style.color = '#e31b6d';
-      msgEl.innerHTML = SHAME_MSGS[Math.min(n,4)];
-      if(streakCount>=7) msgEl.innerHTML += '<br>但你已经连续7天... 哦你破戒了？';
-      else if(streakCount>=5) msgEl.innerHTML += '<br>连续5天的纪录就这么毁了...';
-      else if(streakCount>=3) msgEl.innerHTML += '<br>连续3天的纪录没了，值得吗？';
-    } else {
-      streakEl.textContent = '今日平安';
-      streakEl.style.color = '#66d9ed';
-      if(streakCount>=7) msgEl.innerHTML = '连续7天！恭喜获得铁男称号，奖励自己一顿好的！<br><span style="color:#ff6b2b;">你已经超过了99%的男生！</span>';
-      else if(streakCount>=5) msgEl.textContent = '连续5天！金刚不坏之身初成';
-      else if(streakCount>=3) msgEl.textContent = '连续3天！元始天尊都为你点赞';
-      else if(streakCount>=2) msgEl.textContent = '连续2天！你已经超过了全国50%的男生';
-      else if(streakCount>0) msgEl.textContent = '好样的！今天又管住手了';
-      else msgEl.textContent = '今天还没记录，加油少年！';
-    }
-
-    renderHistory(myRecords);
-    if(isAdmin()) renderAdmin(all);
-  }
-
-  function calcStreak(records){
-    var count=0;
-    var d=new Date();
-    while(true){
-      var s=d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
-      var found=records.some(function(r){return r.date===s && r.did;});
-      if(!found) break;
-      count++;
-      d.setDate(d.getDate()-1);
-    }
-    return count;
-  }
-
-  function calcBestStreak(records){
-    var best=0,cur=0;
-    var sorted=records.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
-    for(var i=0;i<sorted.length;i++){
-      if(sorted[i].did){cur++;if(cur>best)best=cur;}
-      else cur=0;
-    }
-    return best;
-  }
-
-  function getWeekStart(){
-    var d=new Date(); var day=d.getDay();
-    var diff=d.getDate()-day+(day===0?-6:1);
+  function getMonday(){
+    var d=new Date();var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);
     var m=new Date(d.setDate(diff));
     return m.getFullYear()+'-'+(m.getMonth()+1).toString().padStart(2,'0')+'-'+m.getDate().toString().padStart(2,'0');
   }
 
-  var SHAME_MSGS = [
-    '你又破功了... 你的未来老婆正在扣分',
-    '手都起茧了吧？心疼你未来对象三秒',
-    '连续作战?! 你是想凭实力单身到老吗',
-    '牛啊牛啊，这频率... 隔壁老王都自愧不如',
-    '兄弟，再这样下去真的会找不到老婆的'
-  ];
-
-  /* Record actions */
-  document.getElementById('btn-yes').addEventListener('click',function(){document.getElementById('count-area').style.display='block';});
-  document.getElementById('btn-no').addEventListener('click',recordNo);
-  document.querySelectorAll('.cnt-btn').forEach(function(b){b.addEventListener('click',function(){recordYes(parseInt(b.getAttribute('data-n')));});});
-
-  async function recordNo(){
-    var today = todayStr();
-    var existing = cachedRecords.filter(function(r){ return r.date===today && r.username===loggedUser; });
-    if(existing.length>0){
-      await supabaseFetch('/checkin_records?id=eq.'+existing[0].id, { method:'DELETE' });
-    }
-    await supabaseFetch('/checkin_records', {
-      method:'POST',
-      body: JSON.stringify({username:loggedUser, date:today, did:false, count:0})
-    });
-    document.getElementById('count-area').style.display='none';
-    loadCheckin();
+  /* ── Load all records from Supabase ── */
+  async function loadData(){
+    var q='/checkin_records?order=date.asc';
+    try{
+      var res=await supabaseFetch(q);
+      cachedRecords=await res.json()||[];
+    }catch(e){cachedRecords=[];}
+    var myRecords=cachedRecords.filter(function(r){return r.username===loggedUser;});
+    updateUI(myRecords);
+    renderHistory(myRecords);
+    if(isAdmin()) renderAdmin(cachedRecords);
   }
 
-  async function recordYes(n){
-    var today = todayStr();
-    var existing = cachedRecords.filter(function(r){ return r.date===today && r.username===loggedUser; });
-    if(existing.length>0){
-      await supabaseFetch('/checkin_records?id=eq.'+existing[0].id, { method:'DELETE' });
+  function updateUI(myRecords){
+    var today=todayStr();
+    var todayRecs=myRecords.filter(function(r){return r.date===today;});
+
+    /* 计算连续天数：从今天往前数，只有 did=true 才算连续 */
+    var streak=0;
+    var d=new Date();
+    for(var i=0;i<365;i++){
+      var s=d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
+      var found=myRecords.some(function(r){return r.date===s && r.did===true;});
+      if(!found) break;
+      streak++;
+      d.setDate(d.getDate()-1);
     }
-    await supabaseFetch('/checkin_records', {
-      method:'POST',
-      body: JSON.stringify({username:loggedUser, date:today, did:true, count:n})
-    });
-    document.getElementById('count-area').style.display='none';
-    loadCheckin();
+
+    /* 本周记录 */
+    var mon=getMonday();
+    var weekTotal=myRecords.filter(function(r){return r.did && r.date>=mon;}).length;
+
+    /* 本月记录 */
+    var mo=today.substring(0,7);
+    var monthTotal=myRecords.filter(function(r){return r.did && r.date.substring(0,7)===mo;}).length;
+
+    /* 最佳连续 */
+    var best=0,cur=0;
+    var sorted=myRecords.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+    for(var i=0;i<sorted.length;i++){
+      if(sorted[i].did){cur++;if(cur>best)best=cur;}
+      else cur=0;
+    }
+
+    document.getElementById('week-count').textContent=weekTotal+'天';
+    document.getElementById('month-count').textContent=monthTotal+'天';
+    document.getElementById('cur-streak').textContent=streak+'天';
+    document.getElementById('best-streak').textContent=best+'天';
+
+    var sd=document.getElementById('streak-display');
+    var msg=document.getElementById('msg-display');
+
+    if(todayRecs.length>0 && todayRecs.some(function(r){return r.did;})){
+      var n=todayRecs.reduce(function(s,r){return s+(r.did?r.count:0);},0);
+      sd.textContent='今日已破戒 ('+n+'次)';
+      sd.style.color='#e31b6d';
+      var shameIdx=Math.min(n,SHAME.length-1);
+      msg.textContent=SHAME[shameIdx];
+      if(streak>=3) msg.textContent+='\n但你已经连续'+streak+'天的纪录就这么毁了...白坚持了';
+    } else if(todayRecs.length>0 && todayRecs.some(function(r){return r.did===false;})){
+      sd.textContent='今日打卡：未破戒 ✓';
+      sd.style.color='#66d9ed';
+      if(streak>=7) msg.innerHTML='连续7天！你已经超过99%的男生！<br><span style="color:#ff6b2b;">🏆 恭喜获得铁男称号！今晚奖励自己一顿好的！</span>';
+      else if(streak>=5) msg.textContent='连续5天！金刚不坏之身初成，继续保持！';
+      else if(streak>=3) msg.textContent='连续3天！元始天尊都为你点赞！';
+      else if(streak>=2) msg.textContent='连续2天！超过了全国50%的男生，继续！';
+      else if(streak>=1) msg.textContent='好样的！今天管住手了！';
+      else msg.textContent='今日平安！明天继续加油！';
+    } else {
+      if(streak>0){
+        sd.textContent='今日未打卡（当前连续'+streak+'天）';
+        sd.style.color='#66d9ed';
+        msg.textContent='今天还没打卡，别忘了！坚持就是胜利！';
+      } else {
+        sd.textContent='今天还没打卡';
+        sd.style.color='rgba(255,255,255,0.4)';
+        msg.textContent='新的一天，记录今天的状态吧！';
+      }
+    }
   }
 
-  function renderHistory(records){
-    var list=document.getElementById('history-list');
-    if(records.length===0){list.innerHTML='<div class="font-mono text-sm" style="color:rgba(255,255,255,0.2);text-align:center;padding:40px 0;">暂无记录</div>';return;}
-    var sorted=records.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
-    list.innerHTML = sorted.map(function(r){
-      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:6px;background:'+(r.did?'rgba(227,27,109,0.04)':'rgba(102,217,237,0.03)')+';">'+
-        '<span style="display:flex;align-items:center;gap:8px;"><span class="font-mono text-sm" style="color:rgba(255,255,255,0.5);">'+r.date+'</span><span class="font-mono text-xs" style="color:rgba(255,255,255,0.15);">'+r.username+'</span></span>'+
-        (r.did?'<span class="font-mono text-xs" style="color:#e31b6d;">破戒 '+r.count+'次</span>':'<span class="font-mono text-xs" style="color:#66d9ed;">平安</span>')+
-      '</div>';
-    }).join('');
+  function renderHistory(myRecords){
+    var wrap=document.getElementById('history-table-wrap');
+    var sorted=myRecords.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+    if(sorted.length===0){wrap.innerHTML='<div class="font-mono text-sm" style="color:rgba(255,255,255,0.2);text-align:center;padding:40px 0;">暂无记录</div>';return;}
+    var html='<table style="width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:12px;">';
+    html+='<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);">';
+    html+='<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,0.25);">日期</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">状态</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">次数</th>';
+    html+='<th style="padding:8px 10px;text-align:right;color:rgba(255,255,255,0.25);">挖苦/鼓励</th>';
+    html+='</tr></thead><tbody>';
+    sorted.forEach(function(r){
+      var shame=r.did?SHAME[Math.min(r.count,SHAME.length-1)]:(r.streak>=3?'坚持就是胜利！':'继续保持！');
+      var status=r.did?'<span style="color:#e31b6d;">破戒</span>':'<span style="color:#66d9ed;">平安</span>';
+      html+='<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">';
+      html+='<td style="padding:8px 10px;color:rgba(255,255,255,0.5);">'+r.date+'</td>';
+      html+='<td style="padding:8px 10px;text-align:center;">'+status+'</td>';
+      html+='<td style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.4);">'+(r.did?r.count+'次':'-')+'</td>';
+      html+='<td style="padding:8px 10px;text-align:right;color:rgba(255,255,255,0.3);font-size:10px;">'+shame.substring(0,20)+'...</td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table>';
+    wrap.innerHTML=html;
   }
 
   function renderAdmin(all){
@@ -345,23 +328,75 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       if(!users[r.username]) users[r.username]={records:[]};
       users[r.username].records.push(r);
     });
-    var html='<div style="display:flex;flex-direction:column;gap:12px;">';
+    var html='<table style="width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:12px;">';
+    html+='<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);">';
+    html+='<th style="padding:8px 10px;text-align:left;color:rgba(255,255,255,0.25);">用户</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">总天数</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">破戒</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">平安</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">当前连续</th>';
+    html+='<th style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.25);">最长连续</th>';
+    html+='</tr></thead><tbody>';
     Object.keys(users).forEach(function(u){
       var recs=users[u].records;
       var didCount=recs.filter(function(r){return r.did;}).length;
-      var streak=calcStreak(recs);
-      var best=calcBestStreak(recs);
-      html += '<div style="padding:14px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;">';
-      html += '<div class="flex items-center gap-3 mb-2"><span class="font-sans font-semibold text-white">'+u+'</span><span class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">共'+recs.length+'天记录</span></div>';
-      html += '<div style="display:flex;gap:16px;font-family:JetBrains Mono,monospace;font-size:12px;">';
-      html += '<span style="color:#e31b6d;">破戒 '+didCount+'天</span>';
-      html += '<span style="color:#66d9ed;">平安 '+(recs.length-didCount)+'天</span>';
-      html += '<span style="color:rgba(255,255,255,0.4);">当前连续 '+streak+'天</span>';
-      html += '<span style="color:rgba(255,255,255,0.4);">最长 '+best+'天</span>';
-      html += '</div></div>';
+      var notCount=recs.length-didCount;
+      var streak=0;var d=new Date();
+      for(var i=0;i<365;i++){
+        var s=d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0');
+        if(!recs.some(function(r){return r.date===s&&r.did;})) break;
+        streak++;d.setDate(d.getDate()-1);
+      }
+      var best=0,cur=0;
+      var sorted=recs.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+      for(var i=0;i<sorted.length;i++){if(sorted[i].did){cur++;if(cur>best)best=cur;}else cur=0;}
+      html+='<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">';
+      html+='<td style="padding:8px 10px;color:#fff;">'+u+'</td>';
+      html+='<td style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.5);">'+recs.length+'天</td>';
+      html+='<td style="padding:8px 10px;text-align:center;color:#e31b6d;">'+didCount+'天</td>';
+      html+='<td style="padding:8px 10px;text-align:center;color:#66d9ed;">'+notCount+'天</td>';
+      html+='<td style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.5);">'+streak+'天</td>';
+      html+='<td style="padding:8px 10px;text-align:center;color:rgba(255,255,255,0.5);">'+best+'天</td>';
+      html+='</tr>';
     });
-    html+='</div>';
+    html+='</tbody></table>';
     list.innerHTML=html;
+  }
+
+  /* ── Bind actions (runs after login) ── */
+  function bindActions(){
+    document.querySelectorAll('.action-btn').forEach(function(b){
+      b.addEventListener('click',function(){
+        var act=b.getAttribute('data-action');
+        if(act==='yes'){document.getElementById('count-area').style.display='block';}
+        else if(act==='no'){recordAction(false,0);}
+      });
+    });
+    document.querySelectorAll('.cnt-btn').forEach(function(b){
+      b.addEventListener('click',function(){recordAction(true,parseInt(b.getAttribute('data-n')));});
+    });
+    document.querySelectorAll('.word-nav').forEach(function(b){
+      b.addEventListener('click',function(){
+        var d=b.getAttribute('data-dir');
+        if(d==='prev'&&wordIdx>0)showWord(wordIdx-1);
+        if(d==='next'&&wordIdx<wordList.length-1)showWord(wordIdx+1);
+      });
+    });
+  }
+
+  async function recordAction(did,count){
+    var today=todayStr();
+    /* Delete existing today record */
+    var existing=cachedRecords.filter(function(r){return r.date===today&&r.username===loggedUser;});
+    for(var i=0;i<existing.length;i++){
+      await supabaseFetch('/checkin_records?id=eq.'+existing[i].id,{method:'DELETE'});
+    }
+    await supabaseFetch('/checkin_records',{
+      method:'POST',
+      body:JSON.stringify({username:loggedUser,date:today,did:did,count:count})
+    });
+    document.getElementById('count-area').style.display='none';
+    loadData();
   }
 
   /* ── Tabs ── */
@@ -370,174 +405,212 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       document.querySelectorAll('.tab-b').forEach(function(x){x.className='tab-b';x.style.background='transparent';x.style.color='rgba(255,255,255,0.4)';});
       t.className='tab-b active';t.style.background='rgba(102,217,237,0.08)';t.style.color='#66d9ed';
       document.querySelectorAll('.tab-c').forEach(function(c){c.style.display='none';});
-      var tab = document.getElementById('tab-'+t.getAttribute('data-tab'));
+      var tab=document.getElementById('tab-'+t.getAttribute('data-tab'));
       if(tab) tab.style.display='block';
       if(t.getAttribute('data-tab')==='words') loadWords();
     });
   });
 
-  /* ── VOCABULARY CET-6 / GRE Level ── */
+  /* ── VOCAB ── */
   var VOCAB = [
-    {word:'abstain',meaning:'弃权;戒除',coll:'abstain from voting/alcohol',s:'He abstained from voting on the proposal.',usage:'abstain from + noun/doing'},
-    {word:'absurd',meaning:'荒谬的;可笑的',coll:'absurd idea/suggestion',s:'The idea that the earth is flat is absurd.',syn:'ridiculous, preposterous [反] reasonable'},
-    {word:'abundance',meaning:'丰富;充裕',coll:'abundance of sth',s:'There is an abundance of evidence.',syn:'plenty, affluence [反] scarcity, shortage'},
-    {word:'accelerate',meaning:'加速;促进',coll:'accelerate growth/pace',s:'Economic growth accelerated this quarter.',tip:'名词 acceleration；反义词 decelerate'},
-    {word:'accommodate',meaning:'容纳;适应;提供住宿',coll:'accommodate sb; accommodate to',s:'The hotel can accommodate 500 guests.',tip:'accommodate sb with sth = 提供某物给某人'},
-    {word:'accountable',meaning:'负有责任的',coll:'accountable to/for',s:'Managers are accountable to shareholders.',syn:'responsible, answerable [反] irresponsible'},
-    {word:'accumulate',meaning:'积累;积聚',coll:'accumulate wealth/experience',s:'Dust accumulated on the shelves.',syn:'amass, build up [反] dissipate, scatter'},
-    {word:'acknowledge',meaning:'承认;确认',coll:'acknowledge receipt of; acknowledge that',s:'He acknowledged having made a mistake.',tip:'acknowledge + doing / that 从句'},
-    {word:'acquisition',meaning:'获得;收购',coll:'acquisition of knowledge; merger and acquisition',s:'The company made a major acquisition.',tip:'动词 acquire；M&A = mergers and acquisitions'},
-    {word:'adamant',meaning:'坚决的;固执的',coll:'adamant about/that',s:'She was adamant that she would not apologize.',syn:'stubborn, unyielding [反] flexible, yielding'},
-    {word:'adept',meaning:'熟练的;擅长的',coll:'adept at (doing) sth',s:'She is adept at negotiating.',syn:'skillful, proficient [反] incompetent'},
-    {word:'adhere',meaning:'黏附;坚持;遵守',coll:'adhere to a principle/rule',s:'We must adhere to the safety regulations.',tip:'adhere to = 严格遵守 (比stick to 更正式)'},
-    {word:'adversary',meaning:'对手;敌手',coll:'formidable adversary',s:'He is a worthy adversary.',syn:'opponent, rival [反] ally, supporter'},
-    {word:'adverse',meaning:'不利的;相反的',coll:'adverse effect/conditions',s:'The drug has no adverse side effects.',syn:'unfavorable, detrimental [反] favorable, beneficial'},
-    {word:'advocate',meaning:'提倡;拥护',coll:'advocate for sth; advocate doing',s:'They advocate reforming the education system.',tip:'既可作动词(提倡)也可作名词(拥护者)'},
-    {word:'affluent',meaning:'富裕的;丰富的',coll:'affluent society/family',s:'He grew up in an affluent family.',syn:'wealthy, prosperous [反] impoverished'},
-    {word:'aggravate',meaning:'加重;使恶化',coll:'aggravate a problem/situation',s:'The delay only aggravated the situation.',syn:'worsen, intensify [反] alleviate, mitigate'},
-    {word:'aggregate',meaning:'总计;集合体',coll:'in the aggregate; aggregate data',s:'The aggregate of all the evidence points to his guilt.',tip:'in the aggregate = 总体而言'},
-    {word:'agitate',meaning:'煽动;使焦虑',coll:'agitate for reform; agitate against',s:'Workers agitated for higher wages.',syn:'disturb, provoke [反] calm, soothe'},
-    {word:'alleviate',meaning:'减轻;缓解',coll:'alleviate pain/suffering',s:'This medicine alleviates the symptoms.',syn:'relieve, mitigate [反] aggravate, worsen'},
-    {word:'allocate',meaning:'分配;划拨',coll:'allocate resources/funds',s:'The government allocated funds for education.',tip:'名词 allocation；比 distribute 更正式'},
-    {word:'ambiguous',meaning:'模棱两可的;含糊的',coll:'ambiguous statement/answer',s:'The wording is ambiguous.',syn:'vague, unclear [反] clear, unambiguous'},
-    {word:'amend',meaning:'修改;修正',coll:'amend a law/document',s:'The constitution was amended in 1999.',tip:'名词 amendment（修正案）'},
-    {word:'ample',meaning:'充足的;宽敞的',coll:'ample time/opportunity',s:'There is ample evidence to prove his guilt.',syn:'abundant, plentiful [反] insufficient, meager'},
-    {word:'analogy',meaning:'类比;类推',coll:'draw an analogy between A and B',s:'The teacher drew an analogy between the heart and a pump.',tip:'by analogy = 以此类推'},
-    {word:'anticipate',meaning:'预期;预料',coll:'anticipate doing sth; anticipate that',s:'We anticipate having a busy day.',tip:'后面接 doing；比 expect 更正式'},
-    {word:'apprehension',meaning:'忧虑;逮捕;理解',coll:'feel apprehension about; apprehension of',s:'She felt some apprehension about the exam.',syn:'anxiety, worry [反] confidence, calm'},
-    {word:'articulate',meaning:'清晰表达;善于表达的',coll:'articulate one\'s thoughts',s:'She is an articulate speaker.',syn:'eloquent, expressive [反] inarticulate'},
-    {word:'ascertain',meaning:'查明;确定',coll:'ascertain the truth/facts',s:'We need to ascertain the cause of the accident.',syn:'determine, discover [反] ignore, overlook'},
-    {word:'aspiration',meaning:'渴望;抱负',coll:'aspiration to do; aspiration for',s:'She has aspirations to become a scientist.',syn:'ambition, desire [反] apathy, indifference'},
-    {word:'assert',meaning:'断言;主张;维护',coll:'assert oneself; assert that',s:'He asserted that the allegations were false.',syn:'declare, claim [反] deny, refute'},
-    {word:'assess',meaning:'评估;评定',coll:'assess the damage/situation',s:'It\'s difficult to assess the impact.',tip:'名词 assessment；比 evaluate 更常用'},
-    {word:'assumption',meaning:'假设;承担',coll:'on the assumption that; make assumptions',s:'We made the assumption that prices would rise.',syn:'presumption, hypothesis'},
-    {word:'attain',meaning:'达到;获得',coll:'attain a goal/objective',s:'He attained the position of CEO.',syn:'achieve, accomplish [反] fail, miss'},
-    {word:'attribute',meaning:'归因于;属性',coll:'attribute to; an attribute of',s:'She attributes her success to hard work.',tip:'attribute A to B = 把A归因于B'},
-    {word:'authentic',meaning:'真正的;可信的',coll:'authentic food/document',s:'This is an authentic Italian restaurant.',syn:'genuine, real [反] fake, counterfeit'},
-    {word:'autonomous',meaning:'自治的;自主的',coll:'autonomous region; autonomous vehicle',s:'Autonomous vehicles are becoming more common.',syn:'independent, self-governing [反] dependent'},
-    {word:'benign',meaning:'良性的;和善的',coll:'benign tumor; benign influence',s:'The tumor was found to be benign.',syn:'harmless, kind [反] malignant, harmful'},
-    {word:'bias',meaning:'偏见;偏袒',coll:'bias towards/against; gender bias',s:'The report showed a bias towards the government.',syn:'prejudice, partiality [反] impartiality, fairness'},
-    {word:'bind',meaning:'捆绑;约束',coll:'bind to; bind together',s:'The contract binds you to the agreement.',syn:'tie, fasten [反] loosen, release'},
-    {word:'breach',meaning:'违反;破坏;突破口',coll:'breach of contract; breach security',s:'The company was sued for breach of contract.',syn:'violation, break [反] compliance, observance'},
-    {word:'capable',meaning:'有能力的',coll:'capable of doing sth',s:'She is capable of handling the situation.',syn:'competent, proficient [反] incapable, incompetent'},
-    {word:'captivate',meaning:'迷住;吸引',coll:'captivate the audience',s:'Her performance captivated the audience.',syn:'fascinate, charm [反] repel, disgust'},
-    {word:'catalyst',meaning:'催化剂;促进因素',coll:'catalyst for change',s:'The protest was a catalyst for political reform.',tip:'比喻义，不仅限于化学'},
-    {word:'categorize',meaning:'分类;归类',coll:'categorized into/as',s:'The books are categorized by subject.',syn:'classify, sort'},
-    {word:'caution',meaning:'谨慎;警告',coll:'with caution; caution against',s:'He approached the situation with caution.',syn:'care, prudence [反] recklessness, carelessness'},
-    {word:'comprehensive',meaning:'全面的;综合的',coll:'comprehensive review/study',s:'We conducted a comprehensive analysis.',syn:'thorough, complete [反] partial, incomplete'},
-    {word:'compromise',meaning:'妥协;折中',coll:'compromise on; reach a compromise',s:'They reached a compromise after long negotiations.',syn:'concession, settlement [反] disagreement, conflict'},
-    {word:'compulsory',meaning:'强制性的;义务的',coll:'compulsory education/course',s:'English is a compulsory subject.',syn:'mandatory, obligatory [反] voluntary, optional'},
-    {word:'conceive',meaning:'构想;怀有;怀孕',coll:'conceive of; conceive an idea',s:'He conceived the idea for the project.',tip:'conceive of = 想象'},
-    {word:'condone',meaning:'宽恕;纵容',coll:'condone violence/behavior',s:'We cannot condone such behavior.',syn:'tolerate, excuse [反] condemn, denounce'},
-    {word:'confine',meaning:'限制;禁闭',coll:'confine to; be confined to',s:'The disease is not confined to the elderly.',syn:'restrict, limit [反] release, free'},
-    {word:'conflict',meaning:'冲突;矛盾',coll:'conflict with; in conflict',s:'Their interests conflict with ours.',syn:'clash, dispute [反] harmony, agreement'},
-    {word:'consensus',meaning:'共识;一致意见',coll:'reach a consensus; consensus on',s:'There is a consensus among experts.',tip:'不可数名词，不能说 a consensus'},
-    {word:'consent',meaning:'同意;许可',coll:'consent to; with sb\'s consent',s:'He gave his consent to the surgery.',syn:'permission, approval [反] refusal, denial'},
-    {word:'constitute',meaning:'构成;建立;任命',coll:'constitute a threat/risk',s:'This constitutes a breach of contract.',syn:'form, compose; 注意不是 include'},
-    {word:'contradict',meaning:'矛盾;反驳',coll:'contradict oneself; contradict a statement',s:'The evidence contradicts his claim.',syn:'dispute, refute [反] confirm, support'},
-    {word:'contribute',meaning:'贡献;捐献;导致',coll:'contribute to',s:'Stress can contribute to heart disease.',syn:'donate, provide [反] subtract, withhold'},
-    {word:'controversy',meaning:'争议;争论',coll:'cause controversy; controversy about/over',s:'The decision caused widespread controversy.',syn:'dispute, debate [反] consensus, agreement'},
-    {word:'conventional',meaning:'传统的;常规的',coll:'conventional wisdom; conventional method',s:'Conventional wisdom says you need a degree.',syn:'traditional, orthodox [反] unconventional, radical'},
-    {word:'conviction',meaning:'定罪;信念;确信',coll:'firm conviction; carry conviction',s:'She has a strong conviction that justice will prevail.',syn:'belief, certainty [反] doubt, uncertainty'},
-    {word:'criteria',meaning:'标准;准则(criterion的复数)',coll:'meet the criteria; criteria for',s:'What are the criteria for selection?',tip:'criterion 是单数，criteria 是复数'},
-    {word:'crucial',meaning:'关键性的;决定性的',coll:'crucial to/for',s:'This evidence is crucial to the case.',syn:'critical, essential [反] unimportant, trivial'},
-    {word:'cultivate',meaning:'培养;耕种;建立',coll:'cultivate a habit/skill/relationship',s:'He cultivated good relationships with his colleagues.',syn:'nurture, develop'},
-    {word:'curb',meaning:'控制;抑制',coll:'curb inflation/spending',s:'The government took measures to curb pollution.',syn:'restrict, restrain [反] encourage, promote'},
-    {word:'currency',meaning:'货币;流通;流行',coll:'gain currency; paper currency',s:'The idea has gained wide currency.',tip:'gain currency = 开始广泛传播'},
-    {word:'deceive',meaning:'欺骗;蒙蔽',coll:'deceive sb into doing sth',s:'He deceived me into signing the contract.',syn:'trick, mislead [反] enlighten, inform'},
-    {word:'decipher',meaning:'破译;解读',coll:'decipher a code/script',s:'Scientists are trying to decipher the ancient script.',syn:'decode, interpret [反] encode, encrypt'},
-    {word:'declare',meaning:'宣布;声明;申报',coll:'declare war; declare bankruptcy; declare income',s:'He declared that he was innocent.',syn:'announce, proclaim'},
-    {word:'decline',meaning:'下降;衰退;拒绝',coll:'decline an offer; in decline',s:'His health has declined in recent years.',syn:'decrease, reject [反] increase, accept'},
-    {word:'dedicate',meaning:'致力于;献身;题献',coll:'dedicate to; dedicate one\'s life to',s:'She dedicated her life to helping the poor.',tip:'dedicate to + noun/doing'},
-    {word:'defy',meaning:'违抗;蔑视;挑战',coll:'defy authority; defy belief',s:'The acrobat defied death with his performance.',syn:'resist, challenge [反] obey, comply'},
-    {word:'deprive',meaning:'剥夺;使丧失',coll:'deprive of',s:'They were deprived of their rights.',syn:'strip, dispossess [反] provide, supply'},
-    {word:'deteriorate',meaning:'恶化;变坏',coll:'deteriorate into; deteriorating condition',s:'The situation has deteriorated rapidly.',syn:'worsen, decline [反] improve, recover'},
-    {word:'diligent',meaning:'勤奋的;勤勉的',coll:'diligent in/at',s:'She is diligent in her studies.',syn:'industrious, hardworking [反] lazy, idle'},
-    {word:'discern',meaning:'辨别;洞察',coll:'discern between; discern the difference',s:'It\'s difficult to discern the truth.',syn:'distinguish, perceive [反] overlook, miss'},
-    {word:'diverse',meaning:'多样的;不同的',coll:'diverse range/background',s:'The city has a diverse population.',syn:'varied, assorted [反] uniform, identical'},
-    {word:'doctrine',meaning:'教条;教义;学说',coll:'religious doctrine; political doctrine',s:'The doctrine of evolution is widely accepted.',syn:'principle, belief'},
-    {word:'domestic',meaning:'国内的;家庭的',coll:'domestic market/flights/violence',s:'The product is for the domestic market.',syn:'internal, household [反] foreign, international'},
-    {word:'dominant',meaning:'占优势的;主要的',coll:'dominant position/role',s:'She played a dominant role in the team.',syn:'predominant, prevailing [反] subordinate, secondary'},
-    {word:'drastic',meaning:'激烈的;急剧的',coll:'drastic change/measures',s:'We need to take drastic measures.',syn:'radical, extreme [反] mild, moderate'},
-    {word:'dubious',meaning:'可疑的;怀疑的',coll:'dubious about; dubious reputation',s:'I\'m dubious about his chances.',syn:'doubtful, uncertain [反] certain, convinced'},
-    {word:'edible',meaning:'可以食用的',coll:'edible mushrooms/plants',s:'Are these mushrooms edible?',syn:'eatable, comestible [反] inedible, poisonous'},
-    {word:'elaborate',meaning:'详细的;精心制作的;阐述',coll:'elaborate plan; elaborate on',s:'Could you elaborate on your proposal?',tip:'elaborate on = 详细说明'},
-    {word:'elevate',meaning:'提升;提高',coll:'elevate to; elevate one\'s mind',s:'He was elevated to the position of manager.',syn:'raise, promote [反] lower, degrade'},
-    {word:'elicit',meaning:'引出;诱出',coll:'elicit a response/reaction',s:'The question elicited a strong reaction.',syn:'extract, provoke [反] suppress, repress'},
-    {word:'eligible',meaning:'合格的;符合条件的',coll:'eligible for/to',s:'You are eligible for a refund.',syn:'qualified, entitled [反] ineligible, disqualified'},
-    {word:'eliminate',meaning:'消除;淘汰;消灭',coll:'eliminate poverty/disease',s:'We need to eliminate all errors.',syn:'remove, eradicate [反] retain, preserve'},
-    {word:'embark',meaning:'开始(新项目);上船',coll:'embark on a journey/career',s:'She embarked on a new career in finance.',syn:'begin, commence [反] conclude, finish'},
-    {word:'embody',meaning:'体现;包含',coll:'embody principles/values',s:'He embodies the spirit of the age.',syn:'represent, personify'},
-    {word:'emphasize',meaning:'强调;着重',coll:'emphasize the importance of',s:'The report emphasizes the need for reform.',syn:'stress, highlight [反] understate, ignore'},
-    {word:'empirical',meaning:'经验主义的;基于实验的',coll:'empirical evidence/research',s:'The theory is supported by empirical evidence.',syn:'experimental, observed [反] theoretical, speculative'},
-    {word:'endure',meaning:'忍耐;持久',coll:'endure pain/hardship',s:'They endured great hardship during the war.',syn:'bear, tolerate [反] succumb, yield'},
-    {word:'enhance',meaning:'提高;增强',coll:'enhance performance/quality',s:'Exercise enhances your overall health.',syn:'improve, boost [反] diminish, reduce'},
-    {word:'enormous',meaning:'巨大的;庞大的',coll:'enormous amount/size',s:'There is an enormous amount of work.',syn:'huge, immense [反] tiny, minuscule'},
-    {word:'enthusiasm',meaning:'热情;热忱',coll:'enthusiasm for; with enthusiasm',s:'She showed great enthusiasm for the project.',syn:'passion, eagerness [反] apathy, indifference'},
-    {word:'equivalent',meaning:'等价的;相当的',coll:'equivalent to',s:'The price is equivalent to $100.',syn:'equal, commensurate [反] different, unequal'},
-    {word:'essential',meaning:'必需的;本质的',coll:'essential for/to; it\'s essential that',s:'It\'s essential that you attend the meeting.',syn:'necessary, vital [反] nonessential, optional'},
-    {word:'establish',meaning:'建立;确立',coll:'establish a company/relationship',s:'The company was established in 2000.',syn:'found, set up [反] abolish, dissolve'},
-    {word:'estimate',meaning:'估计;估算',coll:'estimate that; estimate at',s:'The cost is estimated at $1 million.',tip:'名词 estimation；比 guess 更正式'},
-    {word:'evaluate',meaning:'评估;评价',coll:'evaluate the effectiveness/results',s:'We need to evaluate the program\'s effectiveness.',syn:'assess, appraise'},
-    {word:'eventually',meaning:'最终;终于',coll:'eventually realize/achieve',s:'Eventually, he succeeded.',syn:'ultimately, finally [反] immediately, instantly'},
-    {word:'evidence',meaning:'证据;迹象',coll:'evidence of/for; in evidence',s:'There is evidence of climate change.',tip:'不可数名词！不能说 an evidence'},
-    {word:'evolution',meaning:'进化;演变;发展',coll:'evolution of; theory of evolution',s:'The evolution of technology has been rapid.',syn:'development, progression [反] devolution'},
-    {word:'exaggerate',meaning:'夸张;夸大',coll:'exaggerate the importance',s:'He tends to exaggerate his achievements.',syn:'overstate, overemphasize [反] understate'},
-    {word:'exceed',meaning:'超过;超越',coll:'exceed expectations/limits',s:'The cost exceeded our budget.',syn:'surpass, surpass [反] fall short of'},
-    {word:'exclude',meaning:'排除;排斥',coll:'exclude from',s:'Insurance excludes pre-existing conditions.',syn:'omit, eliminate [反] include, admit'},
-    {word:'execute',meaning:'执行;实施;处决',coll:'execute a plan/order',s:'The plan was executed flawlessly.',syn:'implement, perform [反] abandon, cancel'},
-    {word:'exhaust',meaning:'耗尽;使筋疲力尽',coll:'exhaust resources/patience',s:'The experience exhausted him.',syn:'drain, deplete [反] replenish, restore'},
-    {word:'explicit',meaning:'明确的;坦率的',coll:'explicit instructions/lyrics',s:'She gave explicit instructions.',syn:'clear, unambiguous [反] implicit, vague'},
-    {word:'exploit',meaning:'利用;开发;剥削',coll:'exploit resources/opportunities',s:'We need to exploit new opportunities.',syn:'utilize, capitalize on; (贬) take advantage of'},
-    {word:'extensive',meaning:'广泛的;大量的',coll:'extensive research/damage',s:'The storm caused extensive damage.',syn:'vast, wide, comprehensive [反] narrow, limited'},
-    {word:'external',meaning:'外部的;外用的',coll:'external factors/influences',s:'The company faces external pressures.',syn:'outer, exterior [反] internal, inner'},
-    {word:'extract',meaning:'提取;摘录;提炼',coll:'extract from',s:'The dentist extracted the tooth.',syn:'remove, withdraw [反] insert, embed'},
-    {word:'extraordinary',meaning:'非凡的;特别的',coll:'extraordinary talent/achievement',s:'She is a woman of extraordinary intelligence.',syn:'remarkable, exceptional [反] ordinary, average'},
-    {word:'fabricate',meaning:'捏造;制造',coll:'fabricate evidence/a story',s:'The police were accused of fabricating evidence.',syn:'forge, invent [反] reveal, expose'},
-    {word:'famine',meaning:'饥荒;匮乏',coll:'suffer from famine',s:'The region was devastated by famine.',syn:'starvation, scarcity [反] abundance, plenty'},
-    {word:'feasible',meaning:'可行的;可能的',coll:'feasible plan/solution',s:'Is it feasible to finish by Friday?',syn:'possible, viable [反] impossible, impractical'},
-    {word:'fluctuate',meaning:'波动;起伏',coll:'fluctuate between; fluctuate wildly',s:'Prices fluctuate according to demand.',syn:'vary, oscillate [反] stabilize, remain'},
-    {word:'forecast',meaning:'预测;预报',coll:'weather forecast; economic forecast',s:'The forecast predicts rain tomorrow.',syn:'predict, project'},
-    {word:'formidable',meaning:'可怕的;难以克服的',coll:'formidable task/opponent',s:'Climbing the mountain is a formidable challenge.',syn:'daunting, intimidating [反] easy, trivial'},
-    {word:'foster',meaning:'培养;促进;收养',coll:'foster development/a child',s:'The program aims to foster creativity.',syn:'nurture, encourage [反] discourage, stifle'},
-    {word:'foundation',meaning:'基础;基金会;创立',coll:'lay the foundation for',s:'The research laid the foundation for later work.',syn:'basis, groundwork'},
-    {word:'friction',meaning:'摩擦;冲突',coll:'cause friction; friction between',s:'There was friction between the two teams.',syn:'conflict, tension [反] harmony, accord'},
-    {word:'frustrate',meaning:'挫败;使沮丧',coll:'frustrate attempts/plans',s:'The bad weather frustrated our plans.',syn:'thwart, hinder [反] facilitate, assist'},
-    {word:'fulfill',meaning:'履行;实现;满足',coll:'fulfill a promise/dream/requirement',s:'She finally fulfilled her dream of traveling.',syn:'accomplish, achieve [反] neglect, fail'},
-    {word:'fundamental',meaning:'基本的;根本的',coll:'fundamental principle/difference',s:'There is a fundamental difference between them.',syn:'basic, essential [反] secondary, minor'},
-    {word:'generate',meaning:'产生;生成',coll:'generate electricity/interest/revenue',s:'The new system generates a lot of data.',syn:'produce, create [反] consume, destroy'},
-    {word:'generous',meaning:'慷慨的;大方的;宽厚的',coll:'generous to; generous with',s:'She was generous with her time.',syn:'giving, liberal [反] stingy, selfish'},
-    {word:'genuine',meaning:'真正的;真诚的',coll:'genuine concern/interest',s:'She showed genuine concern for the poor.',syn:'authentic, sincere [反] fake, insincere'},
-    {word:'global',meaning:'全球的;全面的',coll:'global economy/warming',s:'Global warming is a serious issue.',syn:'worldwide, universal [反] local, regional'},
-    {word:'gratitude',meaning:'感激;感恩',coll:'gratitude to/for; express gratitude',s:'I would like to express my gratitude.',syn:'thankfulness, appreciation [反] ingratitude'},
-    {word:'guarantee',meaning:'保证;担保',coll:'guarantee that; guarantee against',s:'The product is guaranteed for one year.',syn:'warrant, assure'},
-    {word:'harmony',meaning:'和谐;协调;融洽',coll:'in harmony with; live in harmony',s:'They live in harmony with nature.',syn:'accord, agreement [反] conflict, discord'},
-    {word:'harsh',meaning:'严酷的;刺耳的',coll:'harsh punishment/conditions',s:'The punishment was too harsh.',syn:'severe, strict [反] mild, gentle'},
-    {word:'hesitate',meaning:'犹豫;踌躇',coll:'hesitate to do; hesitate about',s:'Don\'t hesitate to ask for help.',syn:'waver, vacillate [反] decide, resolve'},
-    {word:'highlight',meaning:'强调;突出;亮点',coll:'highlight the importance',s:'The report highlights the need for reform.',syn:'emphasize, underline [反] ignore, overlook'},
-    {word:'hinder',meaning:'阻碍;妨碍',coll:'hinder progress/development',s:'The lack of funds hindered the project.',syn:'impede, obstruct [反] facilitate, help'},
-    {word:'homogeneous',meaning:'同质的;均匀的',coll:'homogeneous group/society',s:'The population is remarkably homogeneous.',syn:'uniform, consistent [反] heterogeneous, diverse'},
+    {word:'abstain',meaning:'弃权;戒除',coll:'abstain from voting/alcohol',s:'He abstained from voting on the proposal.',tip:'abstain from + noun/doing'},
+    {word:'absurd',meaning:'荒谬的;可笑的',coll:'absurd idea/suggestion',s:'The idea that the earth is flat is absurd.',syn:'ridiculous [反] reasonable'},
+    {word:'abundance',meaning:'丰富;充裕',coll:'an abundance of sth',s:'There is an abundance of evidence.',syn:'plenty [反] scarcity'},
+    {word:'accommodate',meaning:'容纳;适应',coll:'accommodate sb; accommodate to',s:'The hotel can accommodate 500 guests.',tip:'accommodate sb with sth'},
+    {word:'accountable',meaning:'负有责任的',coll:'accountable to/for',s:'Managers are accountable to shareholders.',syn:'responsible [反] irresponsible'},
+    {word:'accumulate',meaning:'积累;积聚',coll:'accumulate wealth/experience',s:'Dust accumulated on the shelves.',syn:'amass [反] dissipate'},
+    {word:'adamant',meaning:'坚决的;固执的',coll:'adamant about/that',s:'She was adamant she would not apologize.',syn:'stubborn [反] flexible'},
+    {word:'adept',meaning:'熟练的;擅长的',coll:'adept at (doing) sth',s:'She is adept at negotiating.',syn:'skillful [反] incompetent'},
+    {word:'adhere',meaning:'黏附;坚持;遵守',coll:'adhere to a principle/rule',s:'We must adhere to safety regulations.',tip:'比 stick to 更正式'},
+    {word:'adverse',meaning:'不利的;相反的',coll:'adverse effect/conditions',s:'The drug has no adverse side effects.',syn:'unfavorable [反] favorable'},
+    {word:'advocate',meaning:'提倡;拥护',coll:'advocate for; advocate doing',s:'They advocate reforming the system.',tip:'也可作名词(拥护者)'},
+    {word:'affluent',meaning:'富裕的;丰富的',coll:'affluent society/family',s:'He grew up in an affluent family.',syn:'wealthy [反] impoverished'},
+    {word:'aggravate',meaning:'加重;使恶化',coll:'aggravate a problem/situation',s:'The delay aggravated the situation.',syn:'worsen [反] alleviate'},
+    {word:'alleviate',meaning:'减轻;缓解',coll:'alleviate pain/suffering',s:'This medicine alleviates symptoms.',syn:'relieve [反] aggravate'},
+    {word:'ambiguous',meaning:'模棱两可的',coll:'ambiguous statement/answer',s:'The wording is ambiguous.',syn:'vague [反] clear'},
+    {word:'ample',meaning:'充足的;宽敞的',coll:'ample time/opportunity',s:'There is ample evidence.',syn:'abundant [反] insufficient'},
+    {word:'analogy',meaning:'类比;类推',coll:'draw an analogy between',s:'The teacher drew an analogy between the heart and a pump.',tip:'by analogy = 以此类推'},
+    {word:'anticipate',meaning:'预期;预料',coll:'anticipate doing sth',s:'We anticipate having a busy day.',tip:'后面接 doing'},
+    {word:'articulate',meaning:'清晰表达',coll:'articulate one\'s thoughts',s:'She is an articulate speaker.',syn:'eloquent [反] inarticulate'},
+    {word:'ascertain',meaning:'查明;确定',coll:'ascertain the truth/facts',s:'We need to ascertain the cause.',syn:'determine [反] ignore'},
+    {word:'assert',meaning:'断言;主张;维护',coll:'assert oneself; assert that',s:'He asserted the allegations were false.',syn:'declare [反] deny'},
+    {word:'assumption',meaning:'假设;承担',coll:'on the assumption that',s:'We made the assumption that prices would rise.',syn:'presumption'},
+    {word:'attain',meaning:'达到;获得',coll:'attain a goal/objective',s:'He attained the position of CEO.',syn:'achieve [反] fail'},
+    {word:'attribute',meaning:'归因于;属性',coll:'attribute A to B',s:'She attributes her success to hard work.',tip:'attribute A to B = 归因于'},
+    {word:'authentic',meaning:'真正的;可信的',coll:'authentic food/document',s:'This is authentic Italian food.',syn:'genuine [反] fake'},
+    {word:'autonomous',meaning:'自治的;自主的',coll:'autonomous region/vehicle',s:'Autonomous cars are becoming common.',syn:'independent [反] dependent'},
+    {word:'benign',meaning:'良性的;和善的',coll:'benign tumor; benign influence',s:'The tumor was benign.',syn:'harmless [反] malignant'},
+    {word:'bias',meaning:'偏见;偏袒',coll:'bias towards/against',s:'The report showed a bias towards the government.',syn:'prejudice [反] fairness'},
+    {word:'breach',meaning:'违反;破坏;突破口',coll:'breach of contract',s:'The company was sued for breach of contract.',syn:'violation [反] compliance'},
+    {word:'captivate',meaning:'迷住;吸引',coll:'captivate the audience',s:'Her performance captivated the audience.',syn:'fascinate [反] repel'},
+    {word:'catalyst',meaning:'催化剂;促进因素',coll:'catalyst for change',s:'The protest was a catalyst for reform.',tip:'不仅限于化学'},
+    {word:'comprehensive',meaning:'全面的;综合的',coll:'comprehensive review/study',s:'We conducted a comprehensive analysis.',syn:'thorough [反] partial'},
+    {word:'compulsory',meaning:'强制性的;义务的',coll:'compulsory education/course',s:'English is a compulsory subject.',syn:'mandatory [反] voluntary'},
+    {word:'condone',meaning:'宽恕;纵容',coll:'condone violence/behavior',s:'We cannot condone such behavior.',syn:'tolerate [反] condemn'},
+    {word:'consensus',meaning:'共识;一致意见',coll:'reach a consensus; consensus on',s:'There is a consensus among experts.',tip:'不可数名词'},
+    {word:'constitute',meaning:'构成;建立;任命',coll:'constitute a threat/risk',s:'This constitutes a breach of contract.',syn:'form, compose'},
+    {word:'contradict',meaning:'矛盾;反驳',coll:'contradict oneself',s:'The evidence contradicts his claim.',syn:'dispute [反] confirm'},
+    {word:'controversy',meaning:'争议;争论',coll:'controversy about/over',s:'The decision caused controversy.',syn:'dispute [反] consensus'},
+    {word:'conventional',meaning:'传统的;常规的',coll:'conventional wisdom',s:'Conventional wisdom says you need a degree.',syn:'traditional [反] unconventional'},
+    {word:'criteria',meaning:'标准;准则',coll:'meet the criteria; criteria for',s:'What are the criteria for selection?',tip:'criterion是单数, criteria是复数'},
+    {word:'crucial',meaning:'关键性的',coll:'crucial to/for',s:'This evidence is crucial to the case.',syn:'critical [反] trivial'},
+    {word:'cultivate',meaning:'培养;耕种;建立',coll:'cultivate a habit/skill',s:'He cultivated good relationships.',syn:'nurture'},
+    {word:'currency',meaning:'货币;流通;流行',coll:'gain currency',s:'The idea has gained wide currency.',tip:'gain currency = 开始广泛传播'},
+    {word:'deceive',meaning:'欺骗;蒙蔽',coll:'deceive sb into doing',s:'He deceived me into signing.',syn:'trick [反] enlighten'},
+    {word:'decline',meaning:'下降;衰退;拒绝',coll:'decline an offer; in decline',s:'His health has declined.',syn:'decrease [反] increase'},
+    {word:'dedicate',meaning:'致力于;献身',coll:'dedicate to; dedicate life to',s:'She dedicated her life to helping the poor.',tip:'dedicate to + noun/doing'},
+    {word:'deprive',meaning:'剥夺;使丧失',coll:'deprive of',s:'They were deprived of their rights.',syn:'strip [反] provide'},
+    {word:'deteriorate',meaning:'恶化;变坏',coll:'deteriorate into',s:'The situation has deteriorated.',syn:'worsen [反] improve'},
+    {word:'discern',meaning:'辨别;洞察',coll:'discern between; discern the difference',s:'It\'s difficult to discern the truth.',syn:'distinguish'},
+    {word:'diverse',meaning:'多样的;不同的',coll:'diverse range/background',s:'The city has a diverse population.',syn:'varied [反] uniform'},
+    {word:'domestic',meaning:'国内的;家庭的',coll:'domestic market/flights',s:'The product is for the domestic market.',syn:'internal [反] foreign'},
+    {word:'dominant',meaning:'占优势的;主要的',coll:'dominant position/role',s:'She played a dominant role.',syn:'predominant [反] subordinate'},
+    {word:'drastic',meaning:'激烈的;急剧的',coll:'drastic change/measures',s:'We need to take drastic measures.',syn:'radical [反] mild'},
+    {word:'elaborate',meaning:'详细的;精心制作的',coll:'elaborate plan; elaborate on',s:'Could you elaborate on your proposal?',tip:'elaborate on = 详细说明'},
+    {word:'elevate',meaning:'提升;提高',coll:'elevate to; elevate mind',s:'He was elevated to manager.',syn:'raise [反] lower'},
+    {word:'eligible',meaning:'合格的;符合条件的',coll:'eligible for/to',s:'You are eligible for a refund.',syn:'qualified [反] ineligible'},
+    {word:'eliminate',meaning:'消除;淘汰;消灭',coll:'eliminate poverty/disease',s:'We need to eliminate all errors.',syn:'remove [反] retain'},
+    {word:'embark',meaning:'开始(新项目);上船',coll:'embark on a journey/career',s:'She embarked on a new career.',syn:'begin [反] conclude'},
+    {word:'empirical',meaning:'经验主义的;基于实验的',coll:'empirical evidence/research',s:'The theory is supported by empirical evidence.',syn:'experimental [反] theoretical'},
+    {word:'endure',meaning:'忍耐;持久',coll:'endure pain/hardship',s:'They endured great hardship.',syn:'bear [反] succumb'},
+    {word:'enhance',meaning:'提高;增强',coll:'enhance performance/quality',s:'Exercise enhances your health.',syn:'improve [反] diminish'},
+    {word:'enthusiasm',meaning:'热情;热忱',coll:'enthusiasm for; with enthusiasm',s:'She showed great enthusiasm.',syn:'passion [反] apathy'},
+    {word:'equivalent',meaning:'等价的;相当的',coll:'equivalent to',s:'The price is equivalent to $100.',syn:'equal'},
+    {word:'establish',meaning:'建立;确立',coll:'establish a company',s:'The company was established in 2000.',syn:'found [反] abolish'},
+    {word:'evaluate',meaning:'评估;评价',coll:'evaluate the results',s:'We need to evaluate the program.',syn:'assess'},
+    {word:'evidence',meaning:'证据;迹象',coll:'evidence of/for; in evidence',s:'There is evidence of climate change.',tip:'不可数名词!'},
+    {word:'exaggerate',meaning:'夸张;夸大',coll:'exaggerate the importance',s:'He tends to exaggerate.',syn:'overstate [反] understate'},
+    {word:'exceed',meaning:'超过;超越',coll:'exceed expectations',s:'The cost exceeded our budget.',syn:'surpass'},
+    {word:'exclude',meaning:'排除;排斥',coll:'exclude from',s:'Insurance excludes pre-existing conditions.',syn:'omit [反] include'},
+    {word:'execute',meaning:'执行;实施',coll:'execute a plan/order',s:'The plan was executed flawlessly.',syn:'implement [反] abandon'},
+    {word:'explicit',meaning:'明确的;坦率的',coll:'explicit instructions',s:'She gave explicit instructions.',syn:'clear [反] vague'},
+    {word:'exploit',meaning:'利用;开发;剥削',coll:'exploit resources/opportunities',s:'We need to exploit new opportunities.',syn:'utilize; (贬) take advantage of'},
+    {word:'extensive',meaning:'广泛的;大量的',coll:'extensive research/damage',s:'The storm caused extensive damage.',syn:'vast [反] limited'},
+    {word:'extraordinary',meaning:'非凡的;特别的',coll:'extraordinary talent',s:'She is a woman of extraordinary intelligence.',syn:'remarkable [反] ordinary'},
+    {word:'feasible',meaning:'可行的;可能的',coll:'feasible plan/solution',s:'Is it feasible to finish by Friday?',syn:'viable [反] impossible'},
+    {word:'fluctuate',meaning:'波动;起伏',coll:'fluctuate between',s:'Prices fluctuate according to demand.',syn:'vary [反] stabilize'},
+    {word:'formidable',meaning:'可怕的;难以克服的',coll:'formidable task/opponent',s:'Climbing is a formidable challenge.',syn:'daunting'},
+    {word:'foster',meaning:'培养;促进;收养',coll:'foster development/a child',s:'The program fosters creativity.',syn:'nurture [反] stifle'},
+    {word:'frustrate',meaning:'挫败;使沮丧',coll:'frustrate attempts/plans',s:'The weather frustrated our plans.',syn:'thwart [反] facilitate'},
+    {word:'fulfill',meaning:'履行;实现;满足',coll:'fulfill a promise/dream',s:'She fulfilled her dream.',syn:'accomplish [反] neglect'},
+    {word:'fundamental',meaning:'基本的;根本的',coll:'fundamental principle',s:'There is a fundamental difference.',syn:'basic [反] secondary'},
+    {word:'generate',meaning:'产生;生成',coll:'generate electricity/interest',s:'The system generates a lot of data.',syn:'produce'},
+    {word:'genuine',meaning:'真正的;真诚的',coll:'genuine concern/interest',s:'She showed genuine concern.',syn:'authentic [反] fake'},
+    {word:'guarantee',meaning:'保证;担保',coll:'guarantee that; guarantee against',s:'The product is guaranteed for one year.',syn:'warrant'},
+    {word:'harmony',meaning:'和谐;协调;融洽',coll:'in harmony with',s:'They live in harmony with nature.',syn:'accord [反] conflict'},
+    {word:'hesitate',meaning:'犹豫;踌躇',coll:'hesitate to do; hesitate about',s:'Don\'t hesitate to ask for help.',syn:'waver [反] decide'},
+    {word:'highlight',meaning:'强调;突出;亮点',coll:'highlight the importance',s:'The report highlights the need for reform.',syn:'emphasize [反] ignore'},
+    {word:'hinder',meaning:'阻碍;妨碍',coll:'hinder progress/development',s:'Lack of funds hindered the project.',syn:'impede [反] facilitate'},
+    {word:'homogeneous',meaning:'同质的;均匀的',coll:'homogeneous group/society',s:'The population is homogeneous.',syn:'uniform [反] heterogeneous'},
+    {word:'illustrate',meaning:'说明;阐明;插图',coll:'illustrate a point/principle',s:'The example illustrates the problem.',syn:'demonstrate'},
+    {word:'immense',meaning:'巨大的;无边的',coll:'immense amount/size',s:'The task is of immense importance.',syn:'huge [反] tiny'},
+    {word:'imperative',meaning:'必要的;紧急的;祈使的',coll:'it is imperative that',s:'It\'s imperative that we act now.',syn:'essential'},
+    {word:'implement',meaning:'实施;执行;工具',coll:'implement a plan/policy',s:'The policy was implemented last year.',syn:'execute'},
+    {word:'implicit',meaning:'含蓄的;不言明的',coll:'implicit trust/agreement',s:'There was implicit agreement.',syn:'implied [反] explicit'},
+    {word:'impose',meaning:'强加;征收',coll:'impose on/upon',s:'They imposed a tax on imports.',syn:'inflict'},
+    {word:'impulsive',meaning:'冲动的;任性的',coll:'impulsive behavior/decision',s:'He regretted his impulsive decision.',syn:'rash [反] cautious'},
+    {word:'incentive',meaning:'激励;刺激',coll:'incentive to do; financial incentive',s:'The bonus provides an incentive to work harder.'},
+    {word:'inevitable',meaning:'不可避免的',coll:'inevitable result/consequence',s:'Change is inevitable.',syn:'unavoidable [反] avoidable'},
+    {word:'infer',meaning:'推断;推论',coll:'infer from',s:'What can we infer from the data?',syn:'deduce'},
+    {word:'initiative',meaning:'主动性;倡议;计划',coll:'take the initiative',s:'She took the initiative to start the project.'},
+    {word:'innovative',meaning:'创新的;革新的',coll:'innovative approach/idea',s:'The company is known for innovative products.',syn:'creative [反] traditional'},
+    {word:'integrity',meaning:'正直;完整;诚信',coll:'with integrity; territorial integrity',s:'He is a man of integrity.',syn:'honesty'},
+    {word:'intervene',meaning:'干涉;干预;介入',coll:'intervene in',s:'The government intervened in the dispute.',syn:'interfere'},
+    {word:'intricate',meaning:'复杂的;精细的',coll:'intricate pattern/design',s:'The watch has an intricate mechanism.',syn:'complex [反] simple'},
+    {word:'intuition',meaning:'直觉;直观',coll:'by intuition; have an intuition',s:'She had an intuition that something was wrong.',syn:'instinct'},
+    {word:'invariably',meaning:'始终如一地;总是',coll:'invariably late/wrong',s:'He is invariably late for meetings.',syn:'always [反] sometimes'},
+    {word:'justify',meaning:'证明…正当;辩护',coll:'justify doing sth',s:'How can you justify such behavior?',syn:'defend [反] condemn'},
+    {word:'legitimate',meaning:'合法的;正当的',coll:'legitimate concern/reason',s:'That is a legitimate concern.',syn:'lawful [反] illegitimate'},
+    {word:'liberal',meaning:'自由的;开明的;慷慨的',coll:'liberal views/democracy',s:'She has liberal views on social issues.',syn:'progressive [反] conservative'},
+    {word:'maintain',meaning:'维持;保养;坚持',coll:'maintain order/relationship',s:'They maintained a close friendship.',syn:'keep [反] abandon'},
+    {word:'manipulate',meaning:'操纵;操作;控制',coll:'manipulate public opinion',s:'The data was manipulated.',syn:'control'},
+    {word:'meticulous',meaning:'一丝不苟的;仔细的',coll:'meticulous attention to detail',s:'He is meticulous in his work.',syn:'careful [反] careless'},
+    {word:'negligible',meaning:'微不足道的;可忽略的',coll:'negligible effect/difference',s:'The difference is negligible.',syn:'minor [反] significant'},
+    {word:'novel',meaning:'新颖的;新奇的',coll:'novel approach/idea',s:'They proposed a novel solution.',syn:'original [反] conventional'},
+    {word:'obsolete',meaning:'过时的;废弃的',coll:'become obsolete',s:'The technology is now obsolete.',syn:'outdated [反] current'},
+    {word:'optimal',meaning:'最佳的;最理想的',coll:'optimal solution/condition',s:'We need to find the optimal solution.',syn:'ideal [反] worst'},
+    {word:'originate',meaning:'起源;发源',coll:'originate from/in',s:'The custom originated in China.',syn:'derive [反] end'},
+    {word:'paradox',meaning:'悖论;矛盾',coll:'it is a paradox that',s:'It\'s a paradox that the fastest growth often leads to collapse.'},
+    {word:'perceive',meaning:'感知;察觉;理解',coll:'perceive as',s:'How do you perceive the situation?',syn:'see [反] ignore'},
+    {word:'persuade',meaning:'说服;劝说',coll:'persuade sb to do',s:'She persuaded him to stay.',syn:'convince [反] dissuade'},
+    {word:'phenomenon',meaning:'现象',coll:'social/natural phenomenon',s:'Globalization is a complex phenomenon.',tip:'复数 phenomena'},
+    {word:'plausible',meaning:'貌似可信的',coll:'plausible explanation/argument',s:'His story sounds plausible.',syn:'credible [反] implausible'},
+    {word:'precede',meaning:'先于;在…之前',coll:'precede by/with',s:'The storm was preceded by heavy rains.',syn:'come before [反] follow'},
+    {word:'profound',meaning:'深刻的;意义深远的',coll:'profound effect/impact',s:'The discovery had a profound impact.',syn:'deep [反] superficial'},
+    {word:'prohibit',meaning:'禁止;阻止',coll:'prohibit sb from doing',s:'Smoking is prohibited here.',syn:'forbid [反] permit'},
+    {word:'prominent',meaning:'突出的;著名的',coll:'prominent role/position',s:'He plays a prominent role in the company.',syn:'notable'},
+    {word:'proportion',meaning:'比例;部分',coll:'in proportion to',s:'The proportion of women has increased.',syn:'ratio'},
+    {word:'prosperity',meaning:'繁荣;昌盛',coll:'economic prosperity',s:'The country enjoyed a period of prosperity.',syn:'affluence [反] poverty'},
+    {word:'provoke',meaning:'激怒;挑衅;引起',coll:'provoke a reaction/anger',s:'His speech provoked controversy.',syn:'incite [反] calm'},
+    {word:'pursue',meaning:'追求;追赶;从事',coll:'pursue a goal/career',s:'She pursued a career in medicine.',syn:'chase [反] abandon'},
+    {word:'radical',meaning:'根本的;激进的',coll:'radical change/view',s:'The country needs radical reform.',syn:'extreme [反] moderate'},
+    {word:'random',meaning:'随机的;任意的',coll:'random selection/sample',s:'The selection was completely random.',syn:'arbitrary [反] systematic'},
+    {word:'rationally',meaning:'理性地;合理地',coll:'think/behave rationally',s:'We need to think rationally.',syn:'logically [反] irrationally'},
+    {word:'reinforce',meaning:'加强;增援;巩固',coll:'reinforce the idea/view',s:'The evidence reinforces our theory.',syn:'strengthen [反] weaken'},
+    {word:'relevant',meaning:'相关的;切题的',coll:'relevant to',s:'The information is relevant to the case.',syn:'pertinent [反] irrelevant'},
+    {word:'reluctant',meaning:'不情愿的;勉强的',coll:'reluctant to do',s:'He was reluctant to leave.',syn:'unwilling [反] eager'},
+    {word:'renowned',meaning:'著名的;有声望的',coll:'renowned for/as',s:'The city is renowned for its architecture.',syn:'famous [反] unknown'},
+    {word:'resilience',meaning:'韧性;弹力;恢复力',coll:'show resilience; resilience to',s:'She showed great resilience.',syn:'toughness'},
+    {word:'restore',meaning:'恢复;修复;归还',coll:'restore order/confidence',s:'The government restored order.',syn:'reestablish [反] destroy'},
+    {word:'restrict',meaning:'限制;约束',coll:'restrict to',s:'Access is restricted to employees.',syn:'limit [反] free'},
+    {word:'reveal',meaning:'揭示;揭露;显示',coll:'reveal a secret/truth',s:'The investigation revealed the truth.',syn:'disclose [反] hide'},
+    {word:'rigorous',meaning:'严格的;严谨的',coll:'rigorous analysis/training',s:'The research is rigorous.',syn:'strict [反] lax'},
+    {word:'sacrifice',meaning:'牺牲;献祭',coll:'sacrifice for/to',s:'He sacrificed everything for his family.',syn:'give up [反] keep'},
+    {word:'scrutiny',meaning:'仔细检查;监督',coll:'under scrutiny; public scrutiny',s:'The plan came under close scrutiny.',syn:'examination'},
+    {word:'simulate',meaning:'模拟;仿真',coll:'simulate a situation',s:'The computer simulates the flight conditions.',syn:'imitate'},
+    {word:'skeptical',meaning:'怀疑的;质疑的',coll:'skeptical about/of',s:'I\'m skeptical about his claims.',syn:'doubtful [反] convinced'},
+    {word:'sophisticated',meaning:'复杂的;精密的;老练的',coll:'sophisticated technology/taste',s:'The system is highly sophisticated.',syn:'advanced [反] primitive'},
+    {word:'stimulate',meaning:'刺激;激发;促进',coll:'stimulate growth/interest',s:'The policy stimulated economic growth.',syn:'encourage [反] discourage'},
+    {word:'strategy',meaning:'战略;策略',coll:'develop a strategy; strategy for',s:'We need a new strategy for growth.',syn:'plan, approach'},
+    {word:'substantial',meaning:'大量的;实质的;重要的',coll:'substantial amount/evidence',s:'There is substantial evidence.',syn:'significant [反] insignificant'},
+    {word:'substitute',meaning:'替代;替换',coll:'substitute for',s:'Honey can substitute for sugar.',syn:'replace'},
+    {word:'sufficient',meaning:'足够的;充分的',coll:'sufficient to/for',s:'The evidence is sufficient to prove his guilt.',syn:'enough [反] insufficient'},
+    {word:'superficial',meaning:'表面的;肤浅的',coll:'superficial knowledge/wound',s:'He has only a superficial understanding.',syn:'shallow [反] deep'},
+    {word:'supplement',meaning:'补充;增补',coll:'supplement with/by',s:'She supplements her income by tutoring.',syn:'add [反] subtract'},
+    {word:'surpass',meaning:'超越;胜过',coll:'surpass expectations/records',s:'His performance surpassed all expectations.',syn:'exceed [反] fall short'},
+    {word:'susceptible',meaning:'易受影响的;敏感的',coll:'susceptible to',s:'Children are susceptible to diseases.',syn:'vulnerable [反] immune'},
+    {word:'sustainable',meaning:'可持续的;能维持的',coll:'sustainable development',s:'We need sustainable energy solutions.',syn:'renewable [反] unsustainable'},
+    {word:'symbolize',meaning:'象征;代表',coll:'symbolize peace/freedom',s:'The dove symbolizes peace.',syn:'represent'},
+    {word:'tangible',meaning:'有形的;可触摸的;明确的',coll:'tangible evidence/results',s:'We need tangible proof.',syn:'concrete [反] intangible'},
+    {word:'temporary',meaning:'暂时的;临时的',coll:'temporary solution/job',s:'This is a temporary solution.',syn:'interim [反] permanent'},
+    {word:'tendency',meaning:'趋势;倾向',coll:'tendency to do; a tendency towards',s:'There is a growing tendency to work from home.',syn:'trend'},
+    {word:'thereby',meaning:'因此;从而',coll:'thereby doing',s:'The new law reduced costs, thereby increasing profits.'},
+    {word:'thorough',meaning:'彻底的;全面的;仔细的',coll:'thorough investigation/search',s:'The police conducted a thorough investigation.',syn:'comprehensive [反] careless'},
+    {word:'tolerance',meaning:'容忍;宽容;忍耐',coll:'tolerance of/for',s:'We should show tolerance towards others.',syn:'patience [反] intolerance'},
+    {word:'transform',meaning:'转变;改造;变革',coll:'transform into',s:'The city has been transformed.',syn:'change [反] preserve'},
+    {word:'transparent',meaning:'透明的;清晰的',coll:'transparent process/system',s:'The company should be more transparent.',syn:'clear [反] opaque'},
+    {word:'tremendous',meaning:'巨大的;极大的',coll:'tremendous effort/impact',s:'They made a tremendous effort.',syn:'enormous [反] tiny'},
+    {word:'trigger',meaning:'触发;引起;扳机',coll:'trigger a reaction/response',s:'The news triggered a wave of protests.',syn:'spark'},
+    {word:'ultimate',meaning:'最终的;根本的',coll:'ultimate goal/power',s:'His ultimate goal is to become a professor.',syn:'final [反] initial'},
+    {word:'undergo',meaning:'经历;遭受',coll:'undergo surgery/training',s:'He underwent heart surgery.',syn:'experience'},
+    {word:'undermine',meaning:'逐渐削弱;暗中破坏',coll:'undermine confidence/authority',s:'The scandal undermined public trust.',syn:'weaken [反] strengthen'},
+    {word:'unprecedented',meaning:'空前的;史无前例的',coll:'unprecedented level/number',s:'The scale of the disaster is unprecedented.',syn:'unparalleled'},
+    {word:'venture',meaning:'冒险;风险项目',coll:'venture into; business venture',s:'They ventured into the unknown.',syn:'enterprise'},
+    {word:'verify',meaning:'核实;验证;证明',coll:'verify the accuracy/identity',s:'We need to verify your identity.',syn:'confirm [反] disprove'},
+    {word:'versatile',meaning:'多才多艺的;多功能的',coll:'versatile actor/tool',s:'She is a versatile performer.',syn:'adaptable'},
+    {word:'viable',meaning:'可行的;可存活的',coll:'viable alternative/solution',s:'The plan is not economically viable.',syn:'feasible [反] impractical'},
+    {word:'vivid',meaning:'生动的;鲜明的;活泼的',coll:'vivid description/memory',s:'She has a vivid imagination.',syn:'lively [反] dull'},
+    {word:'vulnerable',meaning:'脆弱的;易受伤的',coll:'vulnerable to',s:'Children are vulnerable to online dangers.',syn:'exposed [反] protected'},
+    {word:'whereas',meaning:'然而;鉴于',coll:'used for contrast',s:'Some people like it, whereas others hate it.',syn:'while, but'},
+    {word:'withstand',meaning:'承受;抵住',coll:'withstand pressure/criticism',s:'The building can withstand earthquakes.',syn:'endure, resist'},
+    {word:'witness',meaning:'目击者;证人;见证',coll:'witness to; bear witness',s:'He witnessed the accident.',syn:'observer'},
+    {word:'yield',meaning:'产出;屈服;让路',coll:'yield to; yield results',s:'The investigation yielded new evidence.',syn:'produce [反] resist'},
   ];
 
   var wordIdx=0, wordList=[];
-
   function loadWords(){
-    var key='dreamax_words_'+todayStr();
-    var stored=localStorage.getItem(key);
-    if(stored){wordList=JSON.parse(stored);}
-    else{var sh=VOCAB.slice().sort(function(){return Math.random()-0.5;});wordList=sh.slice(0,10);localStorage.setItem(key,JSON.stringify(wordList));}
-    wordIdx=0;showWord(0);
+    var sh=VOCAB.slice().sort(function(){return Math.random()-0.5;});
+    wordList=sh.slice(0,10);
+    wordIdx=0;
+    showWord(0);
   }
 
   function showWord(idx){
+    if(!wordList||wordList.length===0)return;
     if(idx>=wordList.length)idx=wordList.length-1;if(idx<0)idx=0;wordIdx=idx;
     var w=wordList[idx];
-
-    var qEl = document.getElementById('word-question').querySelector('.font-mono.text-xs');
-    if(qEl) qEl.textContent = '选择正确的中文意思 ('+(idx+1)+'/'+wordList.length+')';
-
-    document.getElementById('word-en').textContent = w.word;
-    document.getElementById('word-progress').textContent = (idx+1)+'/'+wordList.length;
+    document.getElementById('word-en').textContent=w.word;
+    document.getElementById('word-progress').textContent=(idx+1)+'/'+wordList.length;
 
     var opts=[w.meaning];
     var all=VOCAB.map(function(v){return v.meaning;}).filter(function(m){return m!==w.meaning;});
@@ -545,9 +618,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     opts.sort(function(){return Math.random()-0.5;});
 
     var html='';
-    opts.forEach(function(o){
-      html+='<div class="opti" data-ans="'+(o===w.meaning?'1':'0')+'" style="padding:11px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:rgba(255,255,255,0.6);font-size:14px;">'+o+'</div>';
-    });
+    opts.forEach(function(o){html+='<div class="opti" data-ans="'+(o===w.meaning?'1':'0')+'" style="padding:11px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:rgba(255,255,255,0.6);font-size:14px;">'+o+'</div>';});
     document.getElementById('word-options').innerHTML=html;
     document.getElementById('word-question').style.display='block';
     document.getElementById('word-answer').style.display='none';
@@ -558,24 +629,21 @@ import PageLayout from "../../../layouts/PageLayout.astro";
         if(ans)return;ans=true;
         var correct=el.getAttribute('data-ans')==='1';
         var r=document.getElementById('word-result');
-        if(correct){el.style.borderColor='#66d9ed';el.style.background='rgba(102,217,237,0.08)';r.innerHTML='<span style="color:#66d9ed;">正确！</span>';}
+        if(correct){el.style.borderColor='#66d9ed';el.style.background='rgba(102,217,237,0.08)';r.innerHTML='<span style="color:#66d9ed;">正确!</span>';}
         else{
           el.style.borderColor='#e31b6d';el.style.background='rgba(227,27,109,0.08)';
           document.querySelectorAll('.opti').forEach(function(e){if(e.getAttribute('data-ans')==='1'){e.style.borderColor='#66d9ed';e.style.background='rgba(102,217,237,0.08)';}});
           r.innerHTML='<span style="color:#e31b6d;">错误</span>';
         }
-        document.getElementById('word-meaning').innerHTML = '<strong>释义：</strong>' + w.meaning;
-        document.getElementById('word-collocations').innerHTML = '<strong>搭配：</strong>' + w.coll + '<br><strong>用法：</strong>' + (w.usage || w.syn || '注意语境使用');
-        document.getElementById('word-sentence').innerHTML = '<strong>例句：</strong>' + w.s;
-        document.getElementById('word-tip').innerHTML = w.syn ? '<strong>辨析：</strong>' + w.syn : '<strong>提示：</strong>' + (w.tip || '注意单词的固定搭配');
+        document.getElementById('word-meaning').innerHTML='<strong>释义:</strong> '+w.meaning;
+        document.getElementById('word-collocations').innerHTML='<strong>搭配:</strong> '+w.coll+'<br><strong>用法:</strong> '+w.tip;
+        document.getElementById('word-sentence').innerHTML='<strong>例句:</strong> '+w.s;
+        document.getElementById('word-tip').innerHTML=w.syn?'<strong>辨析:</strong> '+w.syn:'<strong>提示:</strong> 注意固定搭配';
         document.getElementById('word-question').style.display='none';
         document.getElementById('word-answer').style.display='block';
       });
     });
   }
-
-  document.getElementById('btn-word-prev').addEventListener('click',function(){if(wordIdx>0)showWord(wordIdx-1);});
-  document.getElementById('btn-word-next').addEventListener('click',function(){if(wordIdx<wordList.length-1)showWord(wordIdx+1);});
 })();
 </script>
 

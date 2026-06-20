@@ -1,0 +1,300 @@
+---
+import PageLayout from "../../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="DreaMax MBTI — 16型人格测试">
+  <section class="min-h-screen px-6 pt-32 pb-24">
+    <div class="mx-auto" style="max-width:800px;">
+      <a href="/tools" class="font-mono text-sm link-underline" style="color:rgba(255,255,255,0.4);">&larr; Back to Tools</a>
+
+      <!-- Start -->
+      <div id="start-screen">
+        <h1 class="section-heading" style="margin:24px 0 8px;">
+          <span class="accent-bar" style="background:#c586c0;"></span>DreaMax MBTI
+        </h1>
+        <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">60 道题 · 约 8 分钟 · 测出你的 16 型人格</p>
+        <div class="p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);margin-top:24px;">
+          <p class="font-mono text-sm" style="color:rgba(255,255,255,0.5);line-height:1.8;">
+            本测试基于 Myers-Briggs 类型指标，从四个维度评估你的性格偏好：
+          </p>
+          <div class="grid gap-3" style="margin-top:16px;">
+            <div style="padding:10px 14px;border-radius:8px;background:rgba(102,217,237,0.04);">
+              <span class="font-mono text-xs" style="color:#66d9ed;">E/I</span>
+              <span class="font-mono text-xs" style="color:rgba(255,255,255,0.4);margin-left:8px;">外向 — 内向</span>
+            </div>
+            <div style="padding:10px 14px;border-radius:8px;background:rgba(227,27,109,0.04);">
+              <span class="font-mono text-xs" style="color:#e31b6d;">S/N</span>
+              <span class="font-mono text-xs" style="color:rgba(255,255,255,0.4);margin-left:8px;">感觉 — 直觉</span>
+            </div>
+            <div style="padding:10px 14px;border-radius:8px;background:rgba(255,107,43,0.04);">
+              <span class="font-mono text-xs" style="color:#ff6b2b;">T/F</span>
+              <span class="font-mono text-xs" style="color:rgba(255,255,255,0.4);margin-left:8px;">思考 — 情感</span>
+            </div>
+            <div style="padding:10px 14px;border-radius:8px;background:rgba(52,168,83,0.04);">
+              <span class="font-mono text-xs" style="color:#34A853;">J/P</span>
+              <span class="font-mono text-xs" style="color:rgba(255,255,255,0.4);margin-left:8px;">判断 — 感知</span>
+            </div>
+          </div>
+          <button id="btn-start" class="btn btn-pink" style="margin-top:24px;width:100%;padding:14px 0;justify-content:center;font-size:15px;">开始测试</button>
+        </div>
+      </div>
+
+      <!-- Test -->
+      <div id="test-screen" style="display:none;">
+        <div style="margin-top:24px;">
+          <div class="flex justify-between items-center mb-4">
+            <span id="q-progress" class="font-mono text-xs" style="color:rgba(255,255,255,0.25);">1 / 60</span>
+            <span id="q-dimension" class="font-mono text-xs" style="color:#66d9ed;">E/I</span>
+          </div>
+          <div class="progress-bar" style="height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+            <div id="q-bar" style="height:100%;width:1.6%;background:#c586c0;border-radius:2px;transition:width 0.3s ease;"></div>
+          </div>
+          <div id="q-text" class="font-sans text-lg text-white" style="margin-top:28px;line-height:1.6;min-height:80px;"></div>
+          <div class="flex flex-col gap-2" style="margin-top:24px;" id="q-options"></div>
+          <div class="flex gap-3" style="margin-top:28px;">
+            <button id="btn-prev" class="btn btn-ghost" style="padding:10px 24px;font-size:13px;">上一题</button>
+            <button id="btn-next" class="btn btn-pink" style="padding:10px 24px;font-size:13px;">下一题</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="result-screen" style="display:none;">
+        <div style="margin-top:24px;text-align:center;">
+          <div id="result-type" class="font-sans text-5xl font-bold" style="letter-spacing:6px;margin-top:12px;"></div>
+          <div id="result-name" class="font-sans text-xl" style="margin-top:8px;color:rgba(255,255,255,0.6);"></div>
+          <div class="flex justify-center gap-4" style="margin-top:20px;">
+            <div class="p-3 rounded" style="background:rgba(102,217,237,0.04);min-width:60px;">
+              <div id="r-e" class="font-mono text-xs" style="color:#66d9ed;">E 0%</div>
+            </div>
+            <div class="p-3 rounded" style="background:rgba(227,27,109,0.04);min-width:60px;">
+              <div id="r-s" class="font-mono text-xs" style="color:#e31b6d;">S 0%</div>
+            </div>
+            <div class="p-3 rounded" style="background:rgba(255,107,43,0.04);min-width:60px;">
+              <div id="r-t" class="font-mono text-xs" style="color:#ff6b2b;">T 0%</div>
+            </div>
+            <div class="p-3 rounded" style="background:rgba(52,168,83,0.04);min-width:60px;">
+              <div id="r-j" class="font-mono text-xs" style="color:#34A853;">J 0%</div>
+            </div>
+          </div>
+          <div id="result-desc" class="font-mono text-sm" style="margin-top:24px;color:rgba(255,255,255,0.5);line-height:1.8;text-align:left;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);"></div>
+          <div class="flex gap-3 justify-center" style="margin-top:24px;">
+            <button id="btn-retake" class="btn btn-pink" style="padding:10px 24px;font-size:13px;">重新测试</button>
+            <button onclick="history.back()" class="btn btn-ghost" style="padding:10px 24px;font-size:13px;">返回</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+(function(){
+  /* ── 60 MBTI Questions ── */
+  var QUESTIONS = [
+    {q:'你更喜欢独自一人度过周末。',d:'EI',dir:1},
+    {q:'在聚会或社交活动中，你感到精力充沛。',d:'EI',dir:-1},
+    {q:'你倾向于保留自己的想法，不轻易表达。',d:'EI',dir:1},
+    {q:'和陌生人交谈对你来说很容易。',d:'EI',dir:-1},
+    {q:'你更喜欢小范围的深度交谈而不是大范围的闲聊。',d:'EI',dir:1},
+    {q:'你在团队活动中感到更加活跃。',d:'EI',dir:-1},
+    {q:'独处能让你恢复精力。',d:'EI',dir:1},
+    {q:'你经常成为聚会中第一个打破沉默的人。',d:'EI',dir:-1},
+    {q:'比起跟人聊天，你更喜欢安静的独处活动。',d:'EI',dir:1},
+    {q:'你经常主动开启新的社交关系。',d:'EI',dir:-1},
+    {q:'你在社交场合经常感到疲惫。',d:'EI',dir:1},
+    {q:'认识新朋友对你来说是一件令人兴奋的事。',d:'EI',dir:-1},
+    {q:'你更倾向于用文字而不是口头表达。',d:'EI',dir:1},
+    {q:'在大型社交场合你常常成为关注的焦点。',d:'EI',dir:-1},
+    {q:'你需要在社交之后有足够的时间独处来充电。',d:'EI',dir:1},
+    {q:'你更关注事物的整体概念而不是细节。',d:'SN',dir:-1},
+    {q:'你非常注重事实和具体的信息。',d:'SN',dir:1},
+    {q:'你经常沉浸在想象和未来的可能性中。',d:'SN',dir:-1},
+    {q:'你喜欢按部就班地处理问题，一步一个脚印。',d:'SN',dir:1},
+    {q:'你善于发现事物背后的深层含义。',d:'SN',dir:-1},
+    {q:'你更相信实际经验而非抽象理论。',d:'SN',dir:1},
+    {q:'你经常会有天马行空的灵感。',d:'SN',dir:-1},
+    {q:'你倾向于关注此时此刻正在发生的事。',d:'SN',dir:1},
+    {q:'你更喜欢讨论理论和概念。',d:'SN',dir:-1},
+    {q:'你注重实际可操作的方法。',d:'SN',dir:1},
+    {q:'你经常思考"如果…会怎样"的问题。',d:'SN',dir:-1},
+    {q:'你对身边的具体细节非常敏感。',d:'SN',dir:1},
+    {q:'你更喜欢富有创意和想象力的活动。',d:'SN',dir:-1},
+    {q:'你倾向于用五官去感知和理解世界。',d:'SN',dir:1},
+    {q:'你经常预想未来的各种可能性。',d:'SN',dir:-1},
+    {q:'你做决定时更多依靠逻辑而不是感觉。',d:'TF',dir:1},
+    {q:'在做决定时，你更关注他人的感受。',d:'TF',dir:-1},
+    {q:'你认为客观事实比人际关系更重要。',d:'TF',dir:1},
+    {q:'你经常设身处地地为他人着想。',d:'TF',dir:-1},
+    {q:'你倾向于用理性分析来解决问题。',d:'TF',dir:1},
+    {q:'你更看重和谐的人际关系而非对错。',d:'TF',dir:-1},
+    {q:'你做决策时很少被情绪左右。',d:'TF',dir:1},
+    {q:'你经常被别人的情绪所影响。',d:'TF',dir:-1},
+    {q:'你更看重事情是否正确而非是否让人舒服。',d:'TF',dir:1},
+    {q:'你倾向于用同理心去理解他人的立场。',d:'TF',dir:-1},
+    {q:'你更擅长逻辑辩论而不是情感交流。',d:'TF',dir:1},
+    {q:'你认为维护团队和谐非常重要。',d:'TF',dir:-1},
+    {q:'你批评他人的时候直言不讳。',d:'TF',dir:1},
+    {q:'你很在意别人是否感到被尊重和关怀。',d:'TF',dir:-1},
+    {q:'处理问题时的公平性比同情心更重要。',d:'TF',dir:1},
+    {q:'你喜欢提前制定详细的计划。',d:'JP',dir:1},
+    {q:'你更喜欢随遇而安，享受当下的灵活性。',d:'JP',dir:-1},
+    {q:'你的桌面和工作空间通常井井有条。',d:'JP',dir:1},
+    {q:'你喜欢在最后一刻才做决定和行动。',d:'JP',dir:-1},
+    {q:'你倾向于按照时间表行事。',d:'JP',dir:1},
+    {q:'你觉得过于严格的计划会让人窒息。',d:'JP',dir:-1},
+    {q:'你很享受完成清单上的每一项任务。',d:'JP',dir:1},
+    {q:'你更喜欢保持开放的选择余地。',d:'JP',dir:-1},
+    {q:'对你来说，条理分明是效率的关键。',d:'JP',dir:1},
+    {q:'你更喜欢即兴发挥而不是按计划执行。',d:'JP',dir:-1},
+    {q:'你喜欢明确的目标和截止日期。',d:'JP',dir:1},
+    {q:'你觉得生活不需要太多计划和安排。',d:'JP',dir:-1},
+    {q:'你总是提前很久就开始准备重要的事情。',d:'JP',dir:1},
+    {q:'你享受冒险和不可预测的经历。',d:'JP',dir:-1},
+    {q:'你非常重视守时和秩序。',d:'JP',dir:1},
+  ];
+
+  /* ── 16 Types ── */
+  var TYPES = {
+    INTJ:{name:'建筑师',desc:'独立、有策略、善于规划。你是天生的战略家，总能看到大局并制定长期计划。你理性、果断，追求知识和能力。你不太在意他人的看法，更关注事情的本质和效率。在别人眼中你自信、有远见，但也可能显得冷漠。'},
+    INTP:{name:'逻辑家',desc:'创新、好奇、思维严谨。你是一个追求真理的思想者，喜欢分析事物的运作方式。你擅长发现模式、构建理论，享受智力挑战。你可能在社交上有些腼腆，但在你感兴趣的领域里滔滔不绝。你最大的武器是你的思维，最需要的是理解。'},
+    ENTJ:{name:'指挥官',desc:'果断、自信、有领导力。你是天生的领导者，善于组织和指挥。你目标明确、行动力强，能够把远见变为现实。你说话直率、效率至上，有时可能让人觉得太强势。但你确实能把事情做好，让人信服。'},
+    ENTP:{name:'辩手',desc:'机智、灵活、有创造力。你是一个喜欢挑战常规的思想者，享受智力上的交锋。你思维敏捷、善于辩论，总能从不同角度看待问题。你喜欢新鲜感，容易厌倦重复。你的好奇心是你的超能力。'},
+    INFJ:{name:'提倡者',desc:'理想主义、有洞察力、富有同理心。你是一个安静但坚定的人，有着深刻的内心世界。你善于理解他人的情感和动机，追求有意义的连接。你坚持不懈地追求自己的理想，在别人眼中你温和、坚定、有智慧。'},
+    INFP:{name:'调停者',desc:'诗意、善良、忠于价值观。你是一个理想主义的梦想家，内心世界丰富而深刻。你重视真实和和谐，善于体会他人的情感。你用自己的方式改变世界——通过理解和创造，而不是控制和竞争。'},
+    ENFJ:{name:'主人公',desc:'热情、有感染力、善于交际。你是一个天生的领导者，懂得如何鼓舞和激励他人。你善于发现别人的潜力，乐于帮助他们成长。你真诚、有魅力，在人群中很有影响力。你最看重的是对他人的积极影响。'},
+    ENFP:{name:'竞选者',desc:'充满活力、有创造力、善于社交。你是一个充满热情的自由灵魂，总能看到生活的无限可能。你好奇心旺盛，喜欢探索新事物和人。你富有感染力，能让周围的人感到快乐和激励。你的热情是你的超能力。'},
+    ISTJ:{name:'物流师',desc:'务实、可靠、有责任感。你是脚踏实地的人，认真负责地做好每一件事。你注重秩序和规矩，做事有条不紊。你是值得信赖的人，说到做到。你的稳定性让周围的人感到安心。'},
+    ISFJ:{name:'守卫者',desc:'细心、忠诚、乐于助人。你是一个温柔体贴的人，总是默默付出。你善于照顾他人的需求，乐于为别人创造温暖的环境。你做事认真负责，对承诺非常重视。你是不折不扣的幕后英雄。'},
+    ESTJ:{name:'总经理',desc:'果断、高效、有组织力。你是天生的管理者，善于制定规则和流程。你务实、直接，注重结果和效率。你尊重传统和权威，做事雷厉风行。在你的带领下，团队总是井然有序。'},
+    ESFJ:{name:'领事',desc:'热情、合群、乐于助人。你是一个社交能手，善于营造和谐的氛围。你乐于助人，重视人际关系，喜欢和大家一起合作。你非常在乎别人的感受，总是尽力让每个人感到被接纳和重视。'},
+    ISTP:{name:'鉴赏家',desc:'灵活、冷静、善于动手。你是一个喜欢探索事物运作原理的实践者。你冷静理性，面对突发情况总能从容应对。你喜欢动手操作，擅长解决实际问题。你享受自由自在、不被约束的生活。'},
+    ISFP:{name:'探险家',desc:'艺术感、温柔、敏感。你是一个安静而敏感的审美者，善于发现生活中的美。你忠于自己内心的感受，用独特的方式表达自己。你温和友善，不喜欢冲突，但对自己的价值观非常坚定。'},
+    ESTP:{name:'创业者',desc:'精力充沛、善于社交、行动力强。你是一个活在当下的人，喜欢冒险和刺激。你行动力极强，善于发现和把握机会。你口才出众，善于说服和影响他人。你的人生信条是：行动胜于空谈。'},
+    ESFP:{name:'表演者',desc:'热情、开朗、富有表演力。你是聚会的焦点，天生的表演者。你热爱生活，喜欢把快乐带给周围的人。你善于即兴发挥，享受每一刻的精彩。你的热情和幽默感让你成为人群中最受欢迎的人。'},
+  };
+
+  var answers = []; /* -3 to 3 */
+  var current = 0;
+  var dimensions = {EI:{e:0,i:0},SN:{s:0,n:0},TF:{t:0,f:0},JP:{j:0,p:0}};
+
+  document.getElementById('btn-start').addEventListener('click', startTest);
+  document.getElementById('btn-prev').addEventListener('click', prevQ);
+  document.getElementById('btn-next').addEventListener('click', nextQ);
+  document.getElementById('btn-retake').addEventListener('click', function(){answers=[];current=0;startTest();});
+
+  function startTest(){
+    document.getElementById('start-screen').style.display='none';
+    document.getElementById('test-screen').style.display='block';
+    document.getElementById('result-screen').style.display='none';
+    if(answers.length===0) answers=QUESTIONS.map(function(){return 0;});
+    current=0;
+    showQ(0);
+  }
+
+  function showQ(idx){
+    if(idx<0||idx>=QUESTIONS.length)return;
+    current=idx;
+    var q=QUESTIONS[idx];
+    document.getElementById('q-progress').textContent=(idx+1)+'/'+QUESTIONS.length;
+    document.getElementById('q-bar').style.width=((idx+1)/QUESTIONS.length*100)+'%';
+    document.getElementById('q-text').textContent=q.q;
+    document.getElementById('q-dimension').textContent=q.d;
+    var dimColors={EI:'#66d9ed',SN:'#e31b6d',TF:'#ff6b2b',JP:'#34A853'};
+    document.getElementById('q-dimension').style.color=dimColors[q.d]||'#66d9ed';
+
+    var labels=['非常不同意','不同意','有点不同意','中立','有点同意','同意','非常同意'];
+    var html='';
+    for(var i=-3;i<=3;i++){
+      var val=i;
+      var checked=answers[idx]===val?' checked':'';
+      var activeStyle=answers[idx]===val?'border-color:rgba(102,217,237,0.4);background:rgba(102,217,237,0.06);':'';
+      html+='<label class="opt-l" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all 0.15s;'+activeStyle+'">';
+      html+='<input type="radio" name="q" value="'+val+'"'+checked+' style="accent-color:#66d9ed;">';
+      html+='<span class="font-mono" style="font-size:13px;color:rgba(255,255,255,0.6);">'+labels[val+3]+'</span>';
+      html+='</label>';
+    }
+    document.getElementById('q-options').innerHTML=html;
+
+    document.querySelectorAll('.opt-l').forEach(function(el){
+      el.addEventListener('click',function(){
+        document.querySelectorAll('.opt-l').forEach(function(l){l.style.borderColor='rgba(255,255,255,0.06)';l.style.background='transparent';});
+        el.style.borderColor='rgba(102,217,237,0.4)';
+        el.style.background='rgba(102,217,237,0.06)';
+      });
+    });
+
+    /* restore radio state */
+    if(answers[idx]!==0){
+      var radio=document.querySelector('input[name="q"][value="'+answers[idx]+'"]');
+      if(radio) radio.checked=true;
+    }
+  }
+
+  function saveAnswer(){
+    var radio=document.querySelector('input[name="q"]:checked');
+    if(radio) answers[current]=parseInt(radio.value);
+  }
+
+  function nextQ(){
+    saveAnswer();
+    if(current<QUESTIONS.length-1){showQ(current+1);}
+    else {showResult();}
+  }
+
+  function prevQ(){
+    saveAnswer();
+    if(current>0) showQ(current-1);
+  }
+
+  function showResult(){
+    document.getElementById('test-screen').style.display='none';
+    document.getElementById('result-screen').style.display='block';
+
+    var ei=0,sn=0,tf=0,jp=0;
+    QUESTIONS.forEach(function(q,i){
+      var a=answers[i]||0;
+      var score=a*(q.dir||1);
+      if(q.d==='EI') ei+=score;
+      else if(q.d==='SN') sn+=score;
+      else if(q.d==='TF') tf+=score;
+      else if(q.d==='JP') jp+=score;
+    });
+
+    /* Normalize to percentages */
+    var maxScore=15*3; /* 15 questions, max 3 each */
+    var ePct=Math.round(Math.max(0, -ei)/(maxScore)*100);
+    var iPct=Math.round(Math.max(0, ei)/(maxScore)*100);
+    var sPct=Math.round(Math.max(0, sn)/(maxScore)*100);
+    var nPct=Math.round(Math.max(0, -sn)/(maxScore)*100);
+    var tPct=Math.round(Math.max(0, tf)/(maxScore)*100);
+    var fPct=Math.round(Math.max(0, -tf)/(maxScore)*100);
+    var jPct=Math.round(Math.max(0, jp)/(maxScore)*100);
+    var pPct=Math.round(Math.max(0, -jp)/(maxScore)*100);
+
+    var typeStr='';
+    typeStr+=ei>0?'I':'E';
+    typeStr+=sn>0?'S':'N';
+    typeStr+=tf>0?'T':'F';
+    typeStr+=jp>0?'J':'P';
+
+    var typeInfo=TYPES[typeStr]||{name:'未知',desc:'请重新测试'};
+
+    document.getElementById('result-type').textContent=typeStr;
+    document.getElementById('result-type').style.color='#66d9ed';
+    document.getElementById('result-name').textContent=typeInfo.name;
+    document.getElementById('result-desc').textContent=typeInfo.desc;
+
+    document.getElementById('r-e').textContent='E '+ePct+'%';
+    document.getElementById('r-s').textContent='S '+sPct+'%';
+    document.getElementById('r-t').textContent='T '+tPct+'%';
+    document.getElementById('r-j').textContent='J '+jPct+'%';
+  }
+})();
+</script>
+
+<style>
+.opt-l:hover{border-color:rgba(102,217,237,0.2)!important;background:rgba(102,217,237,0.03)!important;}
+input[type="radio"]{-webkit-appearance:none;appearance:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.15);border-radius:50%;outline:none;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+input[type="radio"]:checked{border-color:#66d9ed;background:#66d9ed;box-shadow:inset 0 0 0 3px #1a1a24;}
+</style>

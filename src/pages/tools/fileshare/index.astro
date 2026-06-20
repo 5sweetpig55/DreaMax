@@ -1,0 +1,363 @@
+---
+import PageLayout from "../../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="DreaMax 文件速递 — 安全云盘">
+  <section class="min-h-screen px-6 pt-32 pb-24">
+    <div class="mx-auto" style="max-width:860px;">
+      <a href="/tools" class="font-mono text-sm link-underline" style="color:rgba(255,255,255,0.4);">&larr; Back to Tools</a>
+
+      <h1 class="section-heading" style="margin:24px 0 8px;">
+        <span class="accent-bar" style="background:#c586c0;"></span>DreaMax 文件速递
+      </h1>
+      <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">上传文件 → 生成提取码 → 安全分享。存储空间 10GB+，不过期。</p>
+
+      <!-- 登录/用户信息 -->
+      <div id="user-area" class="flex items-center justify-between" style="margin-top:20px;padding:12px 16px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);">
+        <div>
+          <span id="user-status" class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">未登录</span>
+          <span id="user-email" class="font-mono text-xs" style="color:#66d9ed;margin-left:8px;"></span>
+        </div>
+        <button id="btn-auth" class="btn btn-pink" style="padding:6px 16px;font-size:11px;">登录 / 注册</button>
+      </div>
+
+      <!-- 上传区域（登录后显示） -->
+      <div id="upload-section" style="display:none;margin-top:20px;">
+        <div class="p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);">
+          <div class="flex flex-col gap-4">
+            <div>
+              <label class="ctrl-label" style="margin-bottom:6px;">选择文件</label>
+              <input type="file" id="file-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'JetBrains Mono',monospace;font-size:13px;" />
+            </div>
+            <div>
+              <label class="ctrl-label" style="margin-bottom:6px;">自定义提取码（可选，6位数字）</label>
+              <input type="text" id="extract-code" maxlength="6" placeholder="如: 888888" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;" />
+            </div>
+            <button id="btn-upload" class="btn btn-pink" style="padding:12px 0;justify-content:center;width:100%;">上传并生成链接</button>
+            <div id="upload-progress" class="font-mono text-xs" style="color:rgba(255,255,255,0.25);display:none;">上传中...</div>
+          </div>
+
+          <div id="share-result" style="display:none;margin-top:16px;padding:16px;border-radius:8px;background:rgba(102,217,237,0.04);border:1px solid rgba(102,217,237,0.15);">
+            <div class="font-mono text-xs" style="color:#66d9ed;margin-bottom:8px;">分享成功！</div>
+            <div class="flex flex-col gap-2 text-sm">
+              <div><span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">提取码:</span> <span id="result-code" class="font-mono" style="color:#fff;font-size:18px;font-weight:700;letter-spacing:4px;"></span></div>
+              <div><span class="font-mono text-xs" style="color:rgba(255,255,255,0.3);">链接:</span> <span id="result-link" class="font-mono text-xs" style="color:#66d9ed;word-break:break-all;"></span></div>
+              <div class="flex gap-2 mt-2">
+                <button id="btn-copy-link" class="btn btn-ghost" style="padding:4px 12px;font-size:10px;">复制链接</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 提取下载（不需要登录） -->
+      <div class="p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);margin-top:16px;">
+        <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:10px;">输入提取码下载文件（不需要登录）</div>
+        <div class="flex gap-3">
+          <input type="text" id="download-code" placeholder="输入6位提取码" style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;" />
+          <button id="btn-download" class="btn btn-pink" style="padding:10px 24px;font-size:13px;">提取</button>
+        </div>
+        <div id="download-info" style="display:none;margin-top:12px;padding:12px;border-radius:8px;background:rgba(52,168,83,0.04);border:1px solid rgba(52,168,83,0.15);">
+          <div id="file-info" class="font-mono text-sm" style="color:rgba(255,255,255,0.7);"></div>
+          <a id="download-btn" class="btn btn-pink" style="margin-top:8px;display:inline-flex;padding:8px 20px;font-size:12px;">下载文件</a>
+        </div>
+        <div id="download-err" style="display:none;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e31b6d;">提取码无效或文件不存在</div>
+      </div>
+
+      <!-- 我的上传记录 -->
+      <div id="my-records" style="display:none;margin-top:20px;">
+        <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:10px;">📄 我的上传记录</div>
+        <div id="my-list" class="flex flex-col gap-2"></div>
+      </div>
+
+      <!-- 管理员面板 -->
+      <div id="admin-panel" style="display:none;margin-top:20px;">
+        <div class="font-mono text-xs" style="color:#66d9ed;margin-bottom:10px;">📋 所有文件管理（仅管理员可见）</div>
+        <div id="admin-list"></div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+(function(){
+  var WORKER_URL = 'https://old-hall-b586.3752703718.workers.dev';
+  var SUPABASE_URL = 'https://bunumbcdivevvtjvsuvk.supabase.co';
+  var SUPABASE_ANON = 'sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34';
+
+  var session = null; // Supabase 登录会话
+
+  // DOM
+  var userStatus = document.getElementById('user-status');
+  var userEmail = document.getElementById('user-email');
+  var btnAuth = document.getElementById('btn-auth');
+  var uploadSection = document.getElementById('upload-section');
+  var fileInput = document.getElementById('file-input');
+  var extractCode = document.getElementById('extract-code');
+  var btnUpload = document.getElementById('btn-upload');
+  var uploadProgress = document.getElementById('upload-progress');
+  var shareResult = document.getElementById('share-result');
+  var resultCode = document.getElementById('result-code');
+  var resultLink = document.getElementById('result-link');
+  var btnCopyLink = document.getElementById('btn-copy-link');
+  var downloadCode = document.getElementById('download-code');
+  var btnDownload = document.getElementById('btn-download');
+  var downloadInfo = document.getElementById('download-info');
+  var downloadErr = document.getElementById('download-err');
+  var fileInfo = document.getElementById('file-info');
+  var downloadBtn = document.getElementById('download-btn');
+  var myRecords = document.getElementById('my-records');
+  var myList = document.getElementById('my-list');
+  var adminPanel = document.getElementById('admin-panel');
+  var adminList = document.getElementById('admin-list');
+
+  // ── 检查登录状态 ──
+  checkSession();
+
+  async function checkSession(){
+    var stored = localStorage.getItem('dreamax_sb_session');
+    if(stored){
+      try{
+        session = JSON.parse(stored);
+        // 验证是否过期
+        var expired = new Date(session.expires_at) < new Date();
+        if(!expired){
+          updateUI(true, session.user.email);
+          return;
+        }
+      }catch(e){}
+    }
+    // 尝试从 URL 恢复 session（邮箱验证后跳回）
+    try{
+      var hash = window.location.hash;
+      if(hash && hash.includes('access_token')){
+        var params = new URLSearchParams(hash.replace('#', ''));
+        var accessToken = params.get('access_token');
+        var refreshToken = params.get('refresh_token');
+        if(accessToken){
+          var userRes = await fetch(SUPABASE_URL + '/auth/v1/user', {
+            headers: { 'Authorization': 'Bearer ' + accessToken, 'apikey': SUPABASE_ANON }
+          });
+          if(userRes.ok){
+            var userData = await userRes.json();
+            session = { access_token: accessToken, refresh_token: refreshToken, user: userData };
+            localStorage.setItem('dreamax_sb_session', JSON.stringify(session));
+            updateUI(true, userData.email);
+            window.location.hash = '';
+            return;
+          }
+        }
+      }
+    }catch(e){}
+    updateUI(false, '');
+  }
+
+  function updateUI(loggedIn, email){
+    if(loggedIn){
+      userStatus.textContent = '已登录';
+      userEmail.textContent = email;
+      btnAuth.textContent = '退出';
+      uploadSection.style.display = 'block';
+      myRecords.style.display = 'block';
+      loadMyRecords();
+      if(email === '3752703718@qq.com' || email === 'admin@dreamax.com'){
+        adminPanel.style.display = 'block';
+        loadAdmin();
+      }
+    } else {
+      userStatus.textContent = '未登录';
+      userEmail.textContent = '';
+      btnAuth.textContent = '登录 / 注册';
+      uploadSection.style.display = 'none';
+      myRecords.style.display = 'none';
+      adminPanel.style.display = 'none';
+    }
+  }
+
+  // ── 登录/注册 ──
+  btnAuth.addEventListener('click', function(){
+    if(session){
+      // 退出
+      session = null;
+      localStorage.removeItem('dreamax_sb_session');
+      updateUI(false, '');
+      return;
+    }
+    // 跳转 Supabase 登录页
+    var redirectUrl = window.location.origin + '/tools/fileshare';
+    var loginUrl = SUPABASE_URL + '/auth/v1/authorize?provider=email&redirect_to=' + encodeURIComponent(redirectUrl);
+    window.location.href = loginUrl;
+  });
+
+  // ── 上传 ──
+  btnUpload.addEventListener('click', async function(){
+    if(!session){ alert('请先登录'); return; }
+    var file = fileInput.files[0];
+    if(!file){ alert('请选择文件'); return; }
+    if(file.size > 100 * 1024 * 1024){ alert('文件不能超过 100MB'); return; }
+
+    var code = extractCode.value.trim() || '';
+    if(code && !/^\d{6}$/.test(code)){ alert('提取码必须是6位数字'); return; }
+
+    var formData = new FormData();
+    formData.append('file', file);
+    formData.append('code', code);
+
+    uploadProgress.style.display = 'block';
+    uploadProgress.textContent = '上传中...';
+
+    try{
+      var res = await fetch(WORKER_URL + '/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + session.access_token },
+        body: formData,
+      });
+      var data = await res.json();
+      if(data.success){
+        uploadProgress.style.display = 'none';
+        shareResult.style.display = 'block';
+        resultCode.textContent = data.code;
+        resultLink.textContent = data.url;
+        loadMyRecords();
+      } else {
+        uploadProgress.textContent = '上传失败: ' + (data.error || '未知错误');
+      }
+    }catch(err){
+      uploadProgress.textContent = '网络错误: ' + err.message;
+    }
+  });
+
+  // ── 下载 ──
+  btnDownload.addEventListener('click', async function(){
+    var code = downloadCode.value.trim();
+    if(!code){ alert('请输入提取码'); return; }
+
+    try{
+      var res = await fetch(WORKER_URL + '/download?code=' + code);
+      var data = await res.json();
+      if(data.error){
+        downloadInfo.style.display = 'none';
+        downloadErr.style.display = 'block';
+        return;
+      }
+      downloadErr.style.display = 'none';
+      downloadInfo.style.display = 'block';
+      fileInfo.innerHTML = '📄 ' + data.filename + ' (' + formatSize(data.filesize) + ')';
+      downloadBtn.href = data.url;
+      downloadBtn.setAttribute('download', data.filename);
+    }catch(err){
+      downloadErr.style.display = 'block';
+      downloadErr.textContent = '网络错误';
+    }
+  });
+
+  // ── 我的上传记录 ──
+  async function loadMyRecords(){
+    if(!session){ return; }
+    try{
+      var res = await fetch(WORKER_URL + '/my/list', {
+        headers: { 'Authorization': 'Bearer ' + session.access_token }
+      });
+      var data = await res.json() || [];
+      if(data.length === 0){
+        myList.innerHTML = '<div class="font-mono text-sm" style="color:rgba(255,255,255,0.2);text-align:center;padding:20px;">暂无上传记录</div>';
+        return;
+      }
+      var html = '<table style="width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:11px;">';
+      html += '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);">';
+      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">提取码</th>';
+      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">文件名</th>';
+      html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">大小</th>';
+      html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">时间</th>';
+      html += '</tr></thead><tbody>';
+      data.forEach(function(r){
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">';
+        html += '<td style="padding:6px 8px;color:#66d9ed;">'+r.code+'</td>';
+        html += '<td style="padding:6px 8px;color:rgba(255,255,255,0.6);max-width:180px;overflow:hidden;text-overflow:ellipsis;">'+r.filename+'</td>';
+        html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.4);">'+formatSize(r.filesize)+'</td>';
+        html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.3);">'+(r.created_at||'').substring(0,10)+'</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      myList.innerHTML = html;
+    }catch(e){}
+  }
+
+  // ── 管理员 ──
+  async function loadAdmin(){
+    if(!session) return;
+    try{
+      var res = await fetch(WORKER_URL + '/admin/list', {
+        headers: { 'Authorization': 'Bearer ' + session.access_token }
+      });
+      var data = await res.json() || [];
+      if(data.length === 0){
+        adminList.innerHTML = '<div class="font-mono text-sm" style="color:rgba(255,255,255,0.2);text-align:center;padding:20px;">暂无文件</div>';
+        return;
+      }
+      var html = '<table style="width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:11px;">';
+      html += '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);">';
+      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">提取码</th>';
+      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">文件名</th>';
+      html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">大小</th>';
+      html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">上传者</th>';
+      html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">时间</th>';
+      html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">操作</th>';
+      html += '</tr></thead><tbody>';
+      data.forEach(function(r){
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">';
+        html += '<td style="padding:6px 8px;color:#66d9ed;font-weight:600;">'+r.code+'</td>';
+        html += '<td style="padding:6px 8px;color:rgba(255,255,255,0.6);max-width:150px;overflow:hidden;text-overflow:ellipsis;">'+r.filename+'</td>';
+        html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.4);">'+formatSize(r.filesize)+'</td>';
+        html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.3);">'+r.uploaded_by+'</td>';
+        html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.3);">'+(r.created_at||'').substring(0,10)+'</td>';
+        html += '<td style="padding:6px 8px;text-align:center;"><button class="del-btn" data-id="'+r.id+'" style="padding:2px 8px;border-radius:4px;border:1px solid rgba(227,27,109,0.2);background:transparent;color:#e31b6d;font-size:10px;cursor:pointer;">删除</button></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      adminList.innerHTML = html;
+
+      adminList.querySelectorAll('.del-btn').forEach(function(b){
+        b.addEventListener('click', async function(){
+          var id = b.getAttribute('data-id');
+          if(!confirm('确定删除？')) return;
+          await fetch(WORKER_URL + '/admin/delete?id=' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + session.access_token }
+          });
+          loadAdmin();
+          loadMyRecords();
+        });
+      });
+    }catch(e){}
+  }
+
+  // ── 复制 ──
+  btnCopyLink.addEventListener('click', function(){
+    var link = resultLink.textContent;
+    if(link){
+      navigator.clipboard.writeText(link);
+      btnCopyLink.textContent = '已复制';
+      setTimeout(function(){ btnCopyLink.textContent = '复制链接'; }, 1500);
+    }
+  });
+
+  // ── URL 参数自动提取 ──
+  var params = new URLSearchParams(window.location.search);
+  var autoCode = params.get('code');
+  if(autoCode){
+    downloadCode.value = autoCode;
+    btnDownload.click();
+  }
+
+  function formatSize(bytes){
+    if(bytes < 1024) return bytes+'B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(1)+'KB';
+    return (bytes/(1024*1024)).toFixed(1)+'MB';
+  }
+})();
+</script>
+
+<style>
+.ctrl-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;}
+</style>
