@@ -8,16 +8,30 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       <a href="/tools" class="font-mono text-sm link-underline" style="color:rgba(255,255,255,0.4);">&larr; Back to Tools</a>
 
       <!-- Login Gate -->
-      <div id="login-gate" style="margin-top:60px;text-align:center;">
-        <div style="display:inline-block;padding:40px;border:1px solid rgba(255,255,255,0.06);border-radius:16px;background:rgba(255,255,255,0.02);min-width:320px;">
-          <div class="font-sans text-xl font-semibold text-white">自律打卡器</div>
-          <div class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-bottom:20px;">登录后使用</div>
-          <input type="text" id="login-name" placeholder="用户名" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px;" />
-          <input type="password" id="login-pwd" placeholder="密码" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:20px;" />
-          <button id="btn-login" class="btn btn-pink" style="width:100%;padding:12px 0;justify-content:center;">进入</button>
-          <div id="login-err" class="font-mono text-xs" style="color:#e31b6d;margin-top:8px;display:none;">用户名或密码错误</div>
-          <div class="font-mono text-xs" style="color:rgba(255,255,255,0.15);margin-top:16px;">输入名字和密码即可登录，首次使用自动注册</div>
-          <button id="btn-register" class="btn btn-ghost" style="margin-top:8px;padding:6px 16px;font-size:11px;">注册新账号</button>
+      <div id="login-gate" style="margin-top:40px;display:flex;justify-content:center;">
+        <div style="width:100%;max-width:420px;background:linear-gradient(135deg,rgba(18,18,30,0.95),rgba(26,26,46,0.95));border:1px solid rgba(102,217,237,0.08);border-radius:24px;padding:40px 36px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+          <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(102,217,237,0.06),transparent 70%);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-50px;left:-50px;width:150px;height:150px;background:radial-gradient(circle,rgba(227,27,109,0.04),transparent 70%);border-radius:50%;"></div>
+          <div style="text-align:center;position:relative;z-index:1;">
+            <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,rgba(102,217,237,0.12),rgba(102,217,237,0.03));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:1px solid rgba(102,217,237,0.08);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#66d9ed" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <h2 class="font-sans text-2xl font-semibold text-white" style="margin:0;">欢迎回来</h2>
+            <p class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-top:6px;">输入你的信息开始打卡</p>
+          </div>
+          <div style="margin-top:28px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;">
+            <div>
+              <label class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-bottom:4px;display:block;">用户名</label>
+              <input type="text" id="login-name" placeholder="输入用户名" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:#fff;font-family:JetBrains Mono,monospace;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s;" class="ci" />
+            </div>
+            <div>
+              <label class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-bottom:4px;display:block;">密码</label>
+              <input type="password" id="login-pwd" placeholder="••••••••" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:#fff;font-family:JetBrains Mono,monospace;font-size:14px;outline:none;box-sizing:border-box;transition:border-color 0.2s;" class="ci" />
+            </div>
+          </div>
+          <button id="btn-login" style="width:100%;margin-top:22px;padding:14px 0;border-radius:10px;border:none;background:linear-gradient(135deg,#e31b6d,#d62d80);color:#fff;font-family:JetBrains Mono,monospace;font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s;position:relative;z-index:1;box-shadow:0 4px 20px rgba(227,27,109,0.2);">进入</button>
+          <div id="login-err" style="display:none;margin-top:12px;padding:10px;border-radius:8px;background:rgba(227,27,109,0.06);border:1px solid rgba(227,27,109,0.12);font-family:JetBrains Mono,monospace;font-size:12px;color:#e31b6d;text-align:center;position:relative;z-index:1;"></div>
+          <p class="font-mono text-xs" style="color:rgba(255,255,255,0.15);text-align:center;margin-top:18px;position:relative;z-index:1;">新用户输入名字和密码即可自动注册</p>
         </div>
       </div>
 
@@ -649,4 +663,5 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 .cnt-btn{padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;transition:all 0.15s;}
 .cnt-btn:hover{border-color:rgba(227,27,109,0.3);color:#e31b6d;background:rgba(227,27,109,0.04);}
 .opti:hover{border-color:rgba(102,217,237,0.3)!important;background:rgba(102,217,237,0.04)!important;}
+.ci:focus{border-color:rgba(102,217,237,0.3)!important;background:rgba(102,217,237,0.04)!important;}
 </style>
