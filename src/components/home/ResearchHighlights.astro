@@ -4,30 +4,37 @@ import SectionHeading from "../ui/SectionHeading.astro";
 import { featuredResearch } from "../../data/featured";
 ---
 
-<section class="px-6 py-24">
+<section id="research" class="px-6 py-24">
   <div class="mx-auto" style="max-width:1100px;">
     <SectionHeading label="Selected Research" accent="pink" />
 
     <div class="grid gap-6 md:grid-cols-3" style="margin-top:48px;">
       {featuredResearch.map((item) => (
-        <a href={item.link || "#"} target="_blank" class="block no-underline">
-          <Card clickable>
-            <div class="flex h-full flex-col gap-4 p-6" data-click-card>
-              <h3 class="font-sans text-lg font-semibold leading-snug text-white">
-                {item.title}
-              </h3>
-              <p class="text-sm leading-relaxed text-white/50" style="font-weight:300;">
-                {item.description}
-              </p>
-              <div class="mt-auto flex items-center gap-2 font-mono text-xs text-white/25">
-                <span>{item.venue}</span>
-                <span>&middot;</span>
-                <span>{item.year}</span>
-                <span style="margin-left:auto; color:#66d9ed; opacity:0.6;">↗</span>
+        <div class="relative">
+          <a href={item.link || "#"} target="_blank" class="block no-underline">
+            <Card clickable>
+              <div class="flex h-full flex-col gap-4 p-6" data-click-card>
+                <h3 class="font-sans text-lg font-semibold leading-snug text-white">
+                  {item.title}
+                </h3>
+                <p class="text-sm leading-relaxed text-white/50" style="font-weight:300;">
+                  {item.description}
+                </p>
+                <div class="mt-auto flex items-center gap-2 font-mono text-xs text-white/25">
+                  <span>{item.venue}</span>
+                  <span>&middot;</span>
+                  <span>{item.year}</span>
+                </div>
               </div>
-            </div>
-          </Card>
-        </a>
+            </Card>
+          </a>
+          <!-- Mirror link for China -->
+          {item.link && item.link.includes('arxiv.org') && (
+            <a href={item.link.replace('arxiv.org', 'cn.arxiv.org')} target="_blank" class="absolute top-2 right-2 font-mono text-[10px] text-white/15 hover:text-[#66d9ed] transition-colors duration-200 no-underline" title="国内镜像">
+              CN ↗
+            </a>
+          )}
+        </div>
       ))}
     </div>
   </div>

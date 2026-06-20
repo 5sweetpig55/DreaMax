@@ -1,7 +1,8 @@
 ---
 import "../styles/global.css";
 import ClickEffect from "../components/ui/ClickEffect.astro";
-import DynamicBackground from "../components/ui/DynamicBackground.astro";
+import GradientBackground from "../components/ui/GradientBackground.astro";
+import TerminalSlogan from "../components/ui/TerminalSlogan.astro";
 
 interface Props {
   title?: string;
@@ -22,7 +23,7 @@ const { title = "DreaMax", description = "Personal academic portfolio" } = Astro
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
 
@@ -31,9 +32,10 @@ const { title = "DreaMax", description = "Personal academic portfolio" } = Astro
     <meta name="msvalidate.01" content="95670F94350AAEFDAB55FD3E650690FA" />
   </head>
   <body>
-    <DynamicBackground />
+    <GradientBackground />
     <div class="grain-overlay"></div>
     <ClickEffect />
+    <TerminalSlogan />
     <slot />
   </body>
 </html>

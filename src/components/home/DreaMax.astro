@@ -1,9 +1,10 @@
 ---
 import { profile } from "../../data/profile";
 import ScrollIndicator from "../ui/ScrollIndicator.astro";
+import DreaMaxLogo from "../ui/DreaMaxLogo.astro";
 ---
 
-<section id="dreamax" class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden" style="padding-top:64px;">
+<section id="dreamax" class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden" style="padding-top:64px;"><!-- Tech icons removed -->
 
   <!-- Code element -->
   <div class="code-sig" id="dreamax-code" onclick="window.location.reload()" title="Reload page" style="position:absolute; top:88px; left:50%; transform:translateX(-50%); z-index:10; cursor:pointer; user-select:none;">
@@ -22,9 +23,8 @@ import ScrollIndicator from "../ui/ScrollIndicator.astro";
   <!-- Content -->
   <div class="relative z-10 flex w-full max-w-6xl flex-col items-center px-6" style="margin-top:80px;">
 
-    <h1 style="font-family:'JetBrains Mono',monospace; font-size:clamp(52px, 12vw, 120px); font-weight:800; line-height:1.2; letter-spacing:4px; color:#ffffff; text-align:center;">
-      {profile.name}
-    </h1>
+    <!-- DreaMax Logo -->
+    <DreaMaxLogo />
 
     <!-- VS Code block with AI/CS flavor -->
     <div class="relative w-full max-w-3xl" style="margin-top:8px;">
@@ -50,20 +50,7 @@ import ScrollIndicator from "../ui/ScrollIndicator.astro";
       {profile.title}
     </p>
 
-    <!-- Email as code -->
-    <div style="display:flex; align-items:center; gap:6px; margin-top:18px; position:relative; z-index:2;">
-      <span style="font-family:'JetBrains Mono',monospace; font-size:clamp(11px, 1.2vw, 13px);">
-        <span style="color:#c586c0; opacity:0.45;">export</span>
-        <span style="color:#569cd6; opacity:0.45;"> const</span>
-        <span style="color:#9cdcfe; opacity:0.4;"> email</span>
-        <span style="color:rgba(255,255,255,0.2);"> =</span>
-        <span style="color:#ce9178; opacity:0.5;">"</span>
-        <a href="mailto:{profile.email}" style="font-family:'JetBrains Mono',monospace; color:#ce9178; opacity:0.55; text-decoration:none; transition:opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">{profile.email}</a>
-        <span style="color:#ce9178; opacity:0.5;">"</span>
-      </span>
-    </div>
-
-    <!-- Quote below email — single line -->
+    <!-- Quote — single line -->
     <div style="margin-top:20px; position:relative; z-index:2; text-align:center;">
       <p style="font-family:'JetBrains Mono',monospace; font-size:clamp(11px, 1.2vw, 13px); color:#ff6b2b; opacity:0.45; letter-spacing:1px; margin:0;">
         "It&rsquo;s about a man who has nothing, who risks everything, to feel something." &mdash; <span style="color:#66d9ed;">Jessica Day</span>
@@ -77,28 +64,6 @@ import ScrollIndicator from "../ui/ScrollIndicator.astro";
     </div>
   </div>
 
-  <!-- Mission statement — right side on desktop -->
-  <div class="hidden md:block" style="position:fixed; right:40px; top:50%; transform:translateY(-50%); max-width:180px; text-align:right; z-index:5;">
-    <div style="border-right:2px solid rgba(102,217,237,0.15); padding-right:24px;">
-      <p style="font-family:'JetBrains Mono',monospace; font-size:clamp(13px, 1.4vw, 17px); color:rgba(255,255,255,0.45); line-height:1.8; margin:0; font-weight:300; letter-spacing:1px;">
-        A website<br/>for everyone<br/>to learn and<br/><span style="color:#e31b6d; font-weight:700; letter-spacing:3px;">change the world!</span>
-      </p>
-      <p style="font-family:'JetBrains Mono',monospace; font-size:clamp(9px, 0.9vw, 10px); color:#c586c0; opacity:0.2; margin-top:14px; letter-spacing:4px;">
-        &lt; version 1.0 &gt;
-      </p>
-    </div>
-  </div>
-
-  <!-- Mobile mission statement -->
-  <div class="md:hidden" style="margin-top:36px; text-align:center; padding:16px 0; border-top:1px solid rgba(255,255,255,0.04);">
-    <p style="font-family:'JetBrains Mono',monospace; font-size:13px; color:rgba(255,255,255,0.45); line-height:1.6; letter-spacing:1px; margin:0;">
-      A website for everyone to learn and <span style="color:#e31b6d; font-weight:700;">change the world!</span>
-    </p>
-    <p style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#c586c0; opacity:0.2; margin-top:8px; letter-spacing:4px;">&lt; version 1.0 &gt;</p>
-  </div>
-    </div>
-  </div>
-
   <div class="flex w-full max-w-5xl items-end px-6" style="padding-bottom:50px; margin-top:auto;">
     <div style="margin-left:auto;"><ScrollIndicator /></div>
   </div>
@@ -106,4 +71,24 @@ import ScrollIndicator from "../ui/ScrollIndicator.astro";
 
 <style>
   #dreamax-code:hover .code-sig-extra { max-width: 320px !important; opacity: 1 !important; }
+
+  .tech-icons { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .ti {
+    position: absolute; width: clamp(18px,2.5vw,32px); height: auto;
+    opacity: 0.25; animation: tiFloat 20s ease-in-out infinite;
+  }
+  .ti-1 { top: 15%; left: 8%; animation-delay: 0s; width:28px; }
+  .ti-2 { top: 25%; right: 12%; animation-delay: -3s; width:24px; }
+  .ti-3 { top: 60%; left: 5%; animation-delay: -7s; width:30px; }
+  .ti-4 { top: 70%; right: 8%; animation-delay: -11s; width:22px; }
+  .ti-5 { top: 40%; left: 15%; animation-delay: -5s; width:26px; }
+  .ti-6 { bottom: 20%; right: 15%; animation-delay: -9s; width:20px; }
+
+  @keyframes tiFloat {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.25; }
+    25% { transform: translateY(-12px) rotate(5deg); opacity: 0.4; }
+    50% { transform: translateY(0) rotate(0deg); opacity: 0.25; }
+    75% { transform: translateY(8px) rotate(-3deg); opacity: 0.35; }
+    100% { transform: translateY(0) rotate(0deg); opacity: 0.25; }
+  }
 </style>

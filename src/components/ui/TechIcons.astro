@@ -1,0 +1,65 @@
+<div class="tech-icons" aria-hidden="true">
+  <!-- VSCode -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#007ACC" stroke-width="1.5" style="top:12%;left:5%;width:28px;animation-delay:0s;">
+    <path d="M16.5 3L23 7.5V16.5L16.5 21L8 15.5L3 18V6L8 3.5L16.5 9.5V3Z"/>
+    <path d="M16.5 9.5L23 7.5M16.5 9.5L8 15.5M16.5 21V9.5" stroke-opacity="0.6"/>
+  </svg>
+  <!-- NVIDIA -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#76B900" stroke-width="1.5" style="top:20%;right:6%;width:30px;animation-delay:-4s;">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" stroke-opacity="0.5"/>
+    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" stroke-opacity="0.3"/>
+  </svg>
+  <!-- PyTorch (stylized) -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#EE4C2C" stroke-width="1.5" style="top:40%;left:8%;width:24px;animation-delay:-7s;">
+    <circle cx="12" cy="12" r="3"/>
+    <line x1="14.5" y1="9.5" x2="19" y2="5"/>
+    <polyline points="19,5 15,5 19,9" stroke-opacity="0.5"/>
+  </svg>
+  <!-- ByteDance -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="1.5" style="top:55%;right:4%;width:22px;animation-delay:-10s;">
+    <path d="M4 4L12 12L4 20"/>
+    <path d="M12 4L20 12L12 20"/>
+  </svg>
+  <!-- Docker -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#2496ED" stroke-width="1.5" style="top:70%;left:3%;width:26px;animation-delay:-13s;">
+    <rect x="2" y="10" width="3" height="3" rx="0.5"/>
+    <rect x="6" y="10" width="3" height="3" rx="0.5"/>
+    <rect x="10" y="10" width="3" height="3" rx="0.5"/>
+    <rect x="6" y="6" width="3" height="3" rx="0.5"/>
+    <rect x="10" y="6" width="3" height="3" rx="0.5"/>
+    <rect x="10" y="14" width="3" height="3" rx="0.5"/>
+    <rect x="14" y="10" width="3" height="3" rx="0.5"/>
+    <path d="M2 14H18C18 14 19 10 14 8C12 6 10 6 8 7" stroke-opacity="0.4"/>
+  </svg>
+  <!-- TensorFlow -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#FF6F00" stroke-width="1.5" style="bottom:25%;right:8%;width:24px;animation-delay:-16s;">
+    <path d="M12 2L4 7V17L12 22V12L20 7V17L12 22"/>
+    <line x1="12" y1="12" x2="20" y2="7" stroke-opacity="0.4"/>
+  </svg>
+  <!-- GitHub -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" style="bottom:40%;left:10%;width:20px;animation-delay:-19s;">
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  </svg>
+  <!-- VS Code logo alternate -->
+  <svg class="ti" viewBox="0 0 24 24" fill="none" stroke="#22A7F0" stroke-width="1.5" style="bottom:15%;left:6%;width:18px;animation-delay:-22s;">
+    <polygon points="17 2 21 6 21 18 17 22 7 14 3 17 3 7 7 10 17 2"/>
+    <line x1="7" y1="10" x2="17" y2="22" stroke-opacity="0.3"/>
+  </svg>
+</div>
+
+<style>
+.tech-icons { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.ti {
+  position: absolute; width: 24px; height: auto;
+  opacity: 0.18; animation: tiFloat 25s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(255,255,255,0.02));
+}
+@keyframes tiFloat {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+  25% { transform: translateY(-10px) rotate(3deg); opacity: 0.28; }
+  50% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+  75% { transform: translateY(6px) rotate(-2deg); opacity: 0.24; }
+  100% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+}
+</style>

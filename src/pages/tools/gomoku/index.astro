@@ -1,0 +1,510 @@
+---
+import PageLayout from "../../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Gomoku — DreaMax Tools">
+  <section class="min-h-screen px-6 pt-32 pb-24">
+    <div class="mx-auto" style="max-width:800px;">
+      <a href="/tools" class="font-mono text-sm link-underline" style="color:rgba(255,255,255,0.4);">&larr; Back to Tools</a>
+
+      <div class="game-box" style="margin-top:24px;">
+        <h1 class="font-sans text-2xl font-semibold text-white" style="margin:0 0 12px;">⚫ 五子棋 · Gomoku</h1>
+        <div id="status" class="font-mono text-sm" style="color:rgba(255,255,255,0.6); margin-bottom:12px; padding:6px 16px; border-radius:999px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); display:inline-block;">黑棋先手</div>
+
+        <div class="board-wrap" style="padding:12px; border-radius:16px; background:rgba(255,255,255,0.04); box-shadow:0 8px 30px rgba(0,0,0,0.3);">
+          <canvas id="board" width="600" height="600" style="width:min(80vw,560px);height:min(80vw,560px);display:block;margin:0 auto;border-radius:12px;cursor:pointer;"></canvas>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3" style="margin-top:16px;">
+          <button onclick="restartGame()" class="btn btn-pink" style="padding:8px 20px;font-size:12px;">重新开始</button>
+          <button id="musicBtn" onclick="toggleMusic()" class="btn btn-ghost" style="padding:8px 20px;font-size:12px;">开启音乐</button>
+          <button id="soundBtn" onclick="toggleSound()" class="btn btn-ghost" style="padding:8px 20px;font-size:12px;">落子声：开</button>
+          <select id="difficulty" onchange="restartGame()" style="padding:8px 16px;border-radius:999px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid rgba(255,255,255,0.1);outline:none;cursor:pointer;">
+            <option value="normal" style="background:#1a1a1e;">休闲</option>
+            <option value="hard" selected style="background:#1a1a1e;">标准</option>
+            <option value="master" style="background:#1a1a1e;">挑战</option>
+          </select>
+        </div>
+
+        <p class="font-mono text-xs" style="color:rgba(255,255,255,0.25); margin-top:16px;">你执黑棋，白棋 AI 自动应手。先连成五颗棋子的一方获胜。</p>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+(function(){
+  const canvas = document.getElementById("board");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const statusText = document.getElementById("status");
+  const musicBtn = document.getElementById("musicBtn");
+  const soundBtn = document.getElementById("soundBtn");
+  const difficultySelect = document.getElementById("difficulty");
+
+  const size = 15;
+  const cell = 40;
+  const padding = 20;
+
+  const EMPTY = 0;
+  const BLACK = 1;
+  const WHITE = 2;
+
+  let board = [];
+  let gameOver = false;
+  let steps = 0;
+  let playerTurn = true;
+  let lastMove = null;
+
+  let audioCtx = null;
+  let musicOn = false;
+  let soundOn = true;
+  let musicTimer = null;
+  let noteIndex = 0;
+
+  const melody = [523, 587, 659, 784, 659, 587, 523, 440, 494, 523, 587, 523];
+
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }
+
+  function tone(freq, duration, type, volume, delay) {
+    delay = delay || 0;
+    ensureAudio();
+    const start = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(start);
+    osc.stop(start + duration + 0.02);
+  }
+
+  function noiseClick(duration, volume) {
+    duration = duration || 0.035;
+    volume = volume || 0.09;
+    ensureAudio();
+    const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const fade = 1 - i / bufferSize;
+      data[i] = (Math.random() * 2 - 1) * fade * fade;
+    }
+    const source = audioCtx.createBufferSource();
+    const filter = audioCtx.createBiquadFilter();
+    const gainG = audioCtx.createGain();
+    filter.type = "highpass";
+    filter.frequency.value = 1800;
+    gainG.gain.value = volume;
+    source.buffer = buffer;
+    source.connect(filter);
+    filter.connect(gainG);
+    gainG.connect(audioCtx.destination);
+    source.start();
+  }
+
+  function playMoveSound(player) {
+    if (!soundOn) return;
+    noiseClick(0.028, 0.06);
+    tone(player === BLACK ? 880 : 1046, 0.055, "sine", 0.07);
+    tone(player === BLACK ? 440 : 523, 0.045, "triangle", 0.035, 0.012);
+  }
+
+  function playWinSound() {
+    if (!soundOn) return;
+    [523, 659, 784, 1046].forEach((f, i) => {
+      setTimeout(() => tone(f, 0.18, "triangle", 0.09), i * 110);
+    });
+  }
+
+  window.toggleMusic = function() {
+    ensureAudio();
+    musicOn = !musicOn;
+    musicBtn.textContent = musicOn ? "关闭音乐" : "开启音乐";
+    if (musicOn) startMusic();
+    else stopMusic();
+  };
+
+  function startMusic() {
+    if (musicTimer) clearInterval(musicTimer);
+    musicTimer = setInterval(() => {
+      if (!musicOn) return;
+      const freq = melody[noteIndex % melody.length];
+      tone(freq, 0.34, "triangle", 0.022);
+      noteIndex++;
+    }, 460);
+  }
+
+  function stopMusic() {
+    if (musicTimer) clearInterval(musicTimer);
+    musicTimer = null;
+  }
+
+  window.toggleSound = function() {
+    soundOn = !soundOn;
+    soundBtn.textContent = soundOn ? "落子声：开" : "落子声：关";
+  };
+
+  function initBoard() {
+    board = [];
+    for (let i = 0; i < size; i++) {
+      board[i] = [];
+      for (let j = 0; j < size; j++) board[i][j] = EMPTY;
+    }
+    gameOver = false;
+    steps = 0;
+    playerTurn = true;
+    lastMove = null;
+    statusText.textContent = "黑棋先手";
+    drawBoard();
+  }
+
+  function drawBoard() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Dark theme board
+    ctx.fillStyle = "#1a1a24";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Subtle grid lines
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < size; i++) {
+      ctx.beginPath();
+      ctx.moveTo(padding, padding + i * cell);
+      ctx.lineTo(padding + (size - 1) * cell, padding + i * cell);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(padding + i * cell, padding);
+      ctx.lineTo(padding + i * cell, padding + (size - 1) * cell);
+      ctx.stroke();
+    }
+
+    // Star points
+    const points = [3, 7, 11];
+    ctx.fillStyle = "rgba(255,255,255,0.2)";
+    for (let x of points) {
+      for (let y of points) {
+        ctx.beginPath();
+        ctx.arc(padding + x * cell, padding + y * cell, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        if (board[i][j] !== EMPTY) drawPiece(i, j, board[i][j]);
+      }
+    }
+
+    if (lastMove) {
+      const x = padding + lastMove.col * cell;
+      const y = padding + lastMove.row * cell;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#66d9ed";
+      ctx.fill();
+    }
+  }
+
+  function drawPiece(row, col, player) {
+    const x = padding + col * cell;
+    const y = padding + row * cell;
+
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.4)";
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 3;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 15, 0, Math.PI * 2);
+
+    if (player === BLACK) {
+      const g = ctx.createRadialGradient(x - 5, y - 5, 3, x, y, 16);
+      g.addColorStop(0, "#555");
+      g.addColorStop(0.4, "#222");
+      g.addColorStop(1, "#000");
+      ctx.fillStyle = g;
+    } else {
+      const g = ctx.createRadialGradient(x - 5, y - 5, 3, x, y, 16);
+      g.addColorStop(0, "#ffffff");
+      g.addColorStop(0.5, "#e0e0e0");
+      g.addColorStop(1, "#aaa");
+      ctx.fillStyle = g;
+    }
+
+    ctx.fill();
+    ctx.restore();
+  }
+
+  canvas.addEventListener("click", function(event) {
+    ensureAudio();
+    if (gameOver || !playerTurn) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+
+    const col = Math.round((x - padding) / cell);
+    const row = Math.round((y - padding) / cell);
+
+    if (!inBoard(row, col)) return;
+    if (board[row][col] !== EMPTY) return;
+
+    placePiece(row, col, BLACK);
+    if (gameOver) return;
+
+    playerTurn = false;
+    statusText.textContent = "白棋思考中...";
+
+    setTimeout(function() {
+      whiteMove();
+    }, difficultySelect.value === "master" ? 360 : 240);
+  });
+
+  function placePiece(row, col, player) {
+    board[row][col] = player;
+    lastMove = { row, col };
+    steps++;
+    playMoveSound(player);
+    drawBoard();
+
+    if (checkWin(row, col, player)) {
+      gameOver = true;
+      statusText.textContent = player === BLACK ? "黑棋胜" : "白棋胜";
+      playWinSound();
+      return;
+    }
+
+    if (steps === size * size) {
+      gameOver = true;
+      statusText.textContent = "平局";
+    }
+  }
+
+  function whiteMove() {
+    if (gameOver) return;
+    const move = findBestMoveForWhite();
+    if (!move) return;
+    placePiece(move.row, move.col, WHITE);
+    if (!gameOver) {
+      playerTurn = true;
+      statusText.textContent = "轮到黑棋";
+    }
+  }
+
+  function findBestMoveForWhite() {
+    const candidates = getCandidateMoves();
+    if (candidates.length === 0) return { row: 7, col: 7 };
+
+    for (const p of candidates) {
+      if (wouldWin(p.row, p.col, WHITE)) return p;
+    }
+    for (const p of candidates) {
+      if (wouldWin(p.row, p.col, BLACK)) return p;
+    }
+
+    const difficulty = difficultySelect.value;
+    const maxCandidates = difficulty === "master" ? 16 : difficulty === "hard" ? 11 : 8;
+
+    const scored = candidates.map(p => {
+      const attack = evaluateMove(p.row, p.col, WHITE);
+      const defense = evaluateMove(p.row, p.col, BLACK);
+      return { ...p, base: attack * 1.22 + defense * 1.12 + centerBonus(p.row, p.col) };
+    }).sort((a, b) => b.base - a.base).slice(0, maxCandidates);
+
+    let bestScore = -Infinity;
+    let bestMoves = [];
+
+    for (const p of scored) {
+      board[p.row][p.col] = WHITE;
+      let score = evaluateBoardFor(WHITE) - evaluateBoardFor(BLACK) * 1.08;
+      const blackReply = bestReplyScore(BLACK, difficulty === "master" ? 12 : 8);
+      score -= blackReply * 0.72;
+
+      if (difficulty === "master") {
+        const replies = getTopMoves(BLACK, 5);
+        let worstAfterReply = Infinity;
+        for (const r of replies) {
+          board[r.row][r.col] = BLACK;
+          const whiteNext = bestReplyScore(WHITE, 8);
+          const valueAfter = evaluateBoardFor(WHITE) - evaluateBoardFor(BLACK) * 1.05 + whiteNext * 0.38;
+          if (valueAfter < worstAfterReply) worstAfterReply = valueAfter;
+          board[r.row][r.col] = EMPTY;
+        }
+        if (worstAfterReply !== Infinity) score += worstAfterReply * 0.18;
+      }
+
+      board[p.row][p.col] = EMPTY;
+      score += p.base * 0.45;
+
+      if (score > bestScore) { bestScore = score; bestMoves = [p]; }
+      else if (Math.abs(score - bestScore) < 1e-9) bestMoves.push(p);
+    }
+
+    return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  }
+
+  function getTopMoves(player, limit) {
+    return getCandidateMoves().map(p => ({...p, s: evaluateMove(p.row, p.col, player)})).sort((a, b) => b.s - a.s).slice(0, limit);
+  }
+
+  function bestReplyScore(player, limit) {
+    const top = getTopMoves(player, limit);
+    let best = 0;
+    for (const p of top) {
+      if (wouldWin(p.row, p.col, player)) return 10000000;
+      const s = evaluateMove(p.row, p.col, player);
+      if (s > best) best = s;
+    }
+    return best;
+  }
+
+  function getCandidateMoves() {
+    const list = [];
+    let hasPiece = false;
+    for (let i = 0; i < size; i++) for (let j = 0; j < size; j++) if (board[i][j] !== EMPTY) hasPiece = true;
+    if (!hasPiece) return [{ row: 7, col: 7 }];
+    for (let i = 0; i < size; i++) for (let j = 0; j < size; j++) if (board[i][j] === EMPTY && hasNeighbor(i, j, 2)) list.push({ row: i, col: j });
+    return list;
+  }
+
+  function hasNeighbor(row, col, distance) {
+    for (let dx = -distance; dx <= distance; dx++) for (let dy = -distance; dy <= distance; dy++) {
+      if (dx === 0 && dy === 0) continue;
+      if (inBoard(row + dx, col + dy) && board[row + dx][col + dy] !== EMPTY) return true;
+    }
+    return false;
+  }
+
+  function wouldWin(row, col, player) {
+    board[row][col] = player;
+    const result = checkWin(row, col, player);
+    board[row][col] = EMPTY;
+    return result;
+  }
+
+  function evaluateBoardFor(player) {
+    let total = 0;
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    for (let i = 0; i < size; i++) for (let j = 0; j < size; j++) for (const [dx, dy] of dirs) {
+      const endRow = i + dx * 4, endCol = j + dy * 4;
+      if (!inBoard(endRow, endCol)) continue;
+      let mine = 0, empty = 0, opp = 0;
+      for (let k = 0; k < 5; k++) {
+        const v = board[i + dx * k][j + dy * k];
+        if (v === player) mine++; else if (v === EMPTY) empty++; else opp++;
+      }
+      if (opp === 0) {
+        if (mine === 5) total += 10000000;
+        else if (mine === 4 && empty === 1) total += 180000;
+        else if (mine === 3 && empty === 2) total += 22000;
+        else if (mine === 2 && empty === 3) total += 1600;
+        else if (mine === 1 && empty === 4) total += 70;
+      }
+    }
+    return total;
+  }
+
+  function evaluateMove(row, col, player) {
+    board[row][col] = player;
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    let total = 0, liveThree = 0, liveFour = 0, rushFour = 0, jumpThreat = 0;
+
+    for (const [dx, dy] of dirs) {
+      const info = lineInfo(row, col, dx, dy, player);
+      const count = info.count, openEnds = info.openEnds;
+      if (count >= 5) total += 10000000;
+      else if (count === 4 && openEnds === 2) { total += 1000000; liveFour++; }
+      else if (count === 4 && openEnds === 1) { total += 230000; rushFour++; }
+      else if (count === 3 && openEnds === 2) { total += 52000; liveThree++; }
+      else if (count === 3 && openEnds === 1) total += 9000;
+      else if (count === 2 && openEnds === 2) total += 2600;
+      else if (count === 2 && openEnds === 1) total += 420;
+      else if (count === 1 && openEnds === 2) total += 70;
+
+      const jump = jumpPatternScore(row, col, dx, dy, player);
+      total += jump.score; jumpThreat += jump.threat;
+    }
+
+    if (liveFour >= 1) total += 1400000;
+    if (rushFour >= 2) total += 650000;
+    if (liveThree >= 2) total += 420000;
+    if (liveThree >= 1 && rushFour >= 1) total += 800000;
+    if (jumpThreat >= 2) total += 260000;
+
+    board[row][col] = EMPTY;
+    return total;
+  }
+
+  function lineInfo(row, col, dx, dy, player) {
+    let count = 1, openEnds = 0;
+    let x = row + dx, y = col + dy;
+    while (inBoard(x, y) && board[x][y] === player) { count++; x += dx; y += dy; }
+    if (inBoard(x, y) && board[x][y] === EMPTY) openEnds++;
+    x = row - dx; y = col - dy;
+    while (inBoard(x, y) && board[x][y] === player) { count++; x -= dx; y -= dy; }
+    if (inBoard(x, y) && board[x][y] === EMPTY) openEnds++;
+    return { count, openEnds };
+  }
+
+  function jumpPatternScore(row, col, dx, dy, player) {
+    let s = "";
+    for (let k = -5; k <= 5; k++) {
+      const x = row + dx * k, y = col + dy * k;
+      if (!inBoard(x, y)) s += "B";
+      else if (board[x][y] === EMPTY) s += "_";
+      else if (board[x][y] === player) s += "X";
+      else s += "O";
+    }
+    let score = 0, threat = 0;
+    const patterns = [
+      {p:"_XXXX_",v:1200000,t:2},{p:"XXXX_",v:350000,t:1},{p:"_XXXX",v:350000,t:1},
+      {p:"XXX_X",v:360000,t:1},{p:"XX_XX",v:360000,t:1},{p:"X_XXX",v:360000,t:1},
+      {p:"_XXX_",v:85000,t:1},{p:"_XX_X_",v:76000,t:1},{p:"_X_XX_",v:76000,t:1},
+      {p:"__XXX__",v:105000,t:1},{p:"__XX__",v:3600,t:0},{p:"_X_X_",v:2200,t:0},
+      {p:"_XX__",v:1200,t:0},{p:"__XX_",v:1200,t:0}
+    ];
+    for (const item of patterns) { if (s.includes(item.p)) { score += item.v; threat += item.t; } }
+    return { score, threat };
+  }
+
+  function centerBonus(row, col) {
+    const center = Math.floor(size / 2);
+    const dist = Math.abs(row - center) + Math.abs(col - center);
+    return Math.max(0, 120 - dist * 8);
+  }
+
+  function checkWin(row, col, player) {
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    for (const [dx, dy] of dirs) {
+      let count = 1;
+      count += countDir(row, col, dx, dy, player);
+      count += countDir(row, col, -dx, -dy, player);
+      if (count >= 5) return true;
+    }
+    return false;
+  }
+
+  function countDir(row, col, dx, dy, player) {
+    let count = 0, x = row + dx, y = col + dy;
+    while (inBoard(x, y) && board[x][y] === player) { count++; x += dx; y += dy; }
+    return count;
+  }
+
+  function inBoard(row, col) { return row >= 0 && row < size && col >= 0 && col < size; }
+
+  window.restartGame = function() { initBoard(); };
+
+  initBoard();
+})();
+</script>

@@ -9,5 +9,6 @@ export const navigation: NavItem[] = [
   { label: "Agentic Scholar", href: "/agentic-scholar" },
   { label: "Algorithm", href: "/algorithms" },
   { label: "Magic Corner", href: "/magic-corner" },
+  { label: "Tools", href: "/tools" },
   { label: "Join Us", href: "/join" },
 ];

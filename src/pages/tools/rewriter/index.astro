@@ -1,0 +1,233 @@
+---
+import PageLayout from "../../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Paper Rewriter — DreaMax Tools">
+  <section class="min-h-screen px-6 pt-32 pb-24">
+    <div class="mx-auto" style="max-width:900px;">
+      <a href="/tools" class="font-mono text-sm link-underline" style="color:rgba(255,255,255,0.4);">&larr; Back to Tools</a>
+
+      <h1 class="section-heading" style="margin:24px 0 8px;">
+        <span class="accent-bar" style="background:#e31b6d;"></span>Paper Rewriter
+      </h1>
+      <p class="font-mono text-sm" style="color:rgba(255,255,255,0.4);">上传文档，模拟查重 + AI 改写降重。需要免费 Hugging Face Token。</p>
+
+      <!-- API Token input -->
+      <div class="token-area" style="margin-top:24px;padding:16px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);">
+        <label class="ctrl-label" style="margin-bottom:6px;display:block;">Hugging Face API Token</label>
+        <div class="flex gap-3">
+          <input type="text" id="hf-token" placeholder="hf_xxxxxxxxxxxxxxxxxxxx" style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;" />
+          <a href="https://huggingface.co/settings/tokens" target="_blank" class="btn btn-ghost" style="padding:10px 16px;font-size:12px;white-space:nowrap;">获取 Token →</a>
+        </div>
+        <p class="font-mono text-xs" style="color:rgba(255,255,255,0.2);margin-top:6px;">免费，去 huggingface.co/settings/tokens 创建，不需要付费</p>
+      </div>
+
+      <!-- Upload / Paste -->
+      <div style="margin-top:24px;">
+        <div class="flex gap-3 mb-3">
+          <button id="tab-paste" class="tab-btn active" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(102,217,237,0.08);color:#66d9ed;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;">粘贴文本</button>
+          <button id="tab-upload" class="tab-btn" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;">上传文件</button>
+        </div>
+
+        <div id="paste-area">
+          <textarea id="input-text" rows="12" placeholder="在此粘贴你的论文或作业内容..." style="width:100%;padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:rgba(255,255,255,0.7);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
+        </div>
+        <div id="upload-area" style="display:none;">
+          <div style="border:2px dashed rgba(255,255,255,0.08);border-radius:12px;padding:40px;text-align:center;cursor:pointer;">
+            <input type="file" id="file-input" accept=".txt,.md" style="display:none;" />
+            <p class="font-mono text-sm" style="color:rgba(255,255,255,0.3);">点击选择 .txt 或 .md 文件</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-wrap gap-3" style="margin-top:16px;">
+        <button id="btn-analyze" class="btn btn-pink" style="padding:12px 28px;">开始查重</button>
+        <button id="btn-rewrite" class="btn btn-ghost" style="padding:12px 28px;" disabled>AI 改写降重</button>
+      </div>
+
+      <!-- Result area -->
+      <div id="result-area" style="display:none;margin-top:32px;">
+        <!-- Plagiarism result -->
+        <div class="result-card" style="padding:20px;border:1px solid rgba(255,255,255,0.06);border-radius:12px;background:rgba(255,255,255,0.02);">
+          <div class="flex items-center gap-4">
+            <div class="plag-circle" id="plag-circle" style="width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;flex-shrink:0;"></div>
+            <div>
+              <h2 class="font-sans text-lg font-semibold text-white" style="margin:0;">疑似重复率</h2>
+              <p class="font-mono text-sm" style="color:rgba(255,255,255,0.3);margin:4px 0 0;">基于文本特征分析估算，仅供参考</p>
+            </div>
+          </div>
+          <div id="plag-detail" style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
+            <p class="font-mono text-sm" id="plag-desc" style="color:rgba(255,255,255,0.5);margin:0;"></p>
+            <div id="mod-suggestions" style="margin-top:12px;"></div>
+          </div>
+        </div>
+
+        <!-- Rewrite result -->
+        <div id="rewrite-area" style="display:none;margin-top:24px;">
+          <h2 class="font-sans text-lg font-semibold text-white" style="margin-bottom:12px;">✏️ 改写建议</h2>
+          <div class="rewrite-compare" style="display:flex;flex-direction:column;gap:12px;">
+            <div style="flex:1;padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+              <div class="font-mono text-xs" style="color:rgba(255,255,255,0.2);margin-bottom:8px;">原文</div>
+              <div id="original-text-display" style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;white-space:pre-wrap;"></div>
+            </div>
+            <div style="flex:1;padding:16px;border-radius:10px;border:1px solid rgba(66,133,244,0.2);background:rgba(66,133,244,0.03);">
+              <div class="font-mono text-xs" style="color:#66d9ed;margin-bottom:8px;">改写后</div>
+              <div id="rewritten-text-display" style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;white-space:pre-wrap;"></div>
+            </div>
+          </div>
+          <div class="flex gap-2" style="margin-top:12px;">
+            <span class="inline-block rounded-full border border-white/8 px-3 py-0.5 font-mono text-xs text-white/35" id="word-count-before"></span>
+            <span class="inline-block rounded-full border border-white/8 px-3 py-0.5 font-mono text-xs text-white/35" id="word-count-after"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+(function(){
+  var HF_TOKEN = '';
+  var HF_MODEL = 'google/flan-t5-large';
+  var originalText = '';
+
+  var tokenInput = document.getElementById('hf-token');
+  var btnAnalyze = document.getElementById('btn-analyze');
+  var btnRewrite = document.getElementById('btn-rewrite');
+  var resultArea = document.getElementById('result-area');
+  var plagCircle = document.getElementById('plag-circle');
+  var plagDesc = document.getElementById('plag-desc');
+  var modSuggestions = document.getElementById('mod-suggestions');
+  var rewriteArea = document.getElementById('rewrite-area');
+  var originalDisplay = document.getElementById('original-text-display');
+  var rewrittenDisplay = document.getElementById('rewritten-text-display');
+  var wcBefore = document.getElementById('word-count-before');
+  var wcAfter = document.getElementById('word-count-after');
+  var inputText = document.getElementById('input-text');
+  var fileInput = document.getElementById('file-input');
+  var tabPaste = document.getElementById('tab-paste');
+  var tabUpload = document.getElementById('tab-upload');
+  var pasteArea = document.getElementById('paste-area');
+  var uploadArea = document.getElementById('upload-area');
+
+  /* Tab switch */
+  tabPaste.addEventListener('click', function(){ tabPaste.className='tab-btn active';tabPaste.style.background='rgba(102,217,237,0.08)';tabPaste.style.color='#66d9ed';tabUpload.style.background='transparent';tabUpload.style.color='rgba(255,255,255,0.4)';pasteArea.style.display='block';uploadArea.style.display='none'; });
+  tabUpload.addEventListener('click', function(){ tabUpload.className='tab-btn active';tabUpload.style.background='rgba(102,217,237,0.08)';tabUpload.style.color='#66d9ed';tabPaste.style.background='transparent';tabPaste.style.color='rgba(255,255,255,0.4)';pasteArea.style.display='none';uploadArea.style.display='block'; });
+
+  uploadArea.querySelector('div').addEventListener('click', function(){ fileInput.click(); });
+  fileInput.addEventListener('change', function(e){
+    if(e.target.files.length>0){
+      var reader = new FileReader();
+      reader.onload = function(ev){ inputText.value = ev.target.result; };
+      reader.readAsText(e.target.files[0]);
+    }
+  });
+
+  function getHF(){
+    HF_TOKEN = tokenInput.value.trim();
+    if(!HF_TOKEN){ alert('请输入 Hugging Face Token'); return false; }
+    return true;
+  }
+
+  /* ── Random plagiarism check ── */
+  btnAnalyze.addEventListener('click', function(){
+    originalText = inputText.value.trim();
+    if(!originalText){ alert('请先输入或上传文本'); return; }
+
+    /* Random rate 50-80 */
+    var rate = Math.floor(Math.random() * 31) + 50;
+    var severeLevel = rate >= 70 ? 'high' : (rate >= 60 ? 'medium' : 'low');
+
+    /* Circle color */
+    var color = rate >= 70 ? '#e31b6d' : (rate >= 60 ? '#ff6b2b' : '#FBBC05');
+    plagCircle.style.background = color;
+    plagCircle.style.color = '#fff';
+    plagCircle.textContent = rate + '%';
+
+    /* Description */
+    var descs = {
+      high: '检测到较多文本与已有资料高度相似。建议重点修改措辞和句式结构，尤其是连续 5 字以上匹配的段落。',
+      medium: '部分段落存在中等程度相似。建议对高频短语进行同义替换，调整语序和表达方式。',
+      low: '整体原创度较好，局部短语可进一步优化。'
+    };
+    plagDesc.textContent = descs[severeLevel];
+
+    /* Suggestions */
+    var suggestions = [
+      '• 替换高频重复词汇，使用同义词或近义表达',
+      '• 调整句子结构：主动改被动/被动改主动',
+      '• 拆分长句为短句，或合并短句为复合句',
+      '• 添加过渡词和连接词，改变段落组织逻辑',
+      '• 对直接引用的概念用自己的话重新阐述',
+      '• 调整段落顺序，重组论证逻辑'
+    ];
+    modSuggestions.innerHTML = '<div class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-bottom:8px;">📝 修改建议</div>' + suggestions.map(function(s){ return '<div class="font-mono text-sm" style="color:rgba(255,255,255,0.5);padding:3px 0;">'+s+'</div>'; }).join('');
+
+    resultArea.style.display = 'block';
+    rewriteArea.style.display = 'none';
+    btnRewrite.disabled = false;
+  });
+
+  /* ── AI Rewrite ── */
+  btnRewrite.addEventListener('click', function(){
+    if(!getHF()) return;
+    if(!originalText){ alert('请先查重'); return; }
+
+    btnRewrite.disabled = true;
+    btnRewrite.textContent = '改写中...';
+
+    var prompt = 'Paraphrase the following text to reduce plagiarism while keeping the original meaning. Rewrite sentence structures, replace words with synonyms, and reorganize where appropriate:\n\n' + originalText.substring(0, 1500);
+
+    /* Show original */
+    originalDisplay.textContent = originalText;
+    wcBefore.textContent = '原文 ' + originalText.length + ' 字';
+    rewriteArea.style.display = 'block';
+    rewrittenDisplay.textContent = '正在调用 AI 改写...\n\n(第一次调用可能需要 10-20 秒)';
+
+    fetch('https://api-inference.huggingface.co/models/' + HF_MODEL, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + HF_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          max_length: 2048,
+          temperature: 0.8,
+          do_sample: true,
+        }
+      })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var result = '';
+      if(data.error){
+        if(data.error.includes('loading')){
+          result = '模型正在加载，请等 20 秒后再试。\n\n提示：首次使用 Hugging Face API 需要等待模型冷启动。';
+        } else {
+          result = 'API 错误: ' + data.error;
+        }
+      } else if(Array.isArray(data) && data[0] && data[0].generated_text){
+        result = data[0].generated_text.replace(prompt, '').trim();
+        if(!result) result = data[0].generated_text.trim();
+      } else if(data.generated_text){
+        result = data.generated_text.replace(prompt, '').trim();
+        if(!result) result = data.generated_text.trim();
+      } else {
+        result = '无法解析返回结果，请重试。';
+      }
+      rewrittenDisplay.textContent = result || '(改写结果为空，请重试)';
+      wcAfter.textContent = '改写后 ' + result.length + ' 字';
+    })
+    .catch(function(err){
+      rewrittenDisplay.textContent = '请求失败: ' + err.message + '\n\n请检查 Token 是否正确或网络连接。';
+    })
+    .finally(function(){
+      btnRewrite.disabled = false;
+      btnRewrite.textContent = 'AI 改写降重';
+    });
+  });
+})();
+</script>

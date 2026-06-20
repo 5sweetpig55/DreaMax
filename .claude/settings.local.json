@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(curl.exe -s -L -o $env:TEMP\\\\mattwill.css https://mattwilldev.com/style/style.css)"
-    ]
-  }
-}
