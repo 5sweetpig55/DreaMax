@@ -26,8 +26,9 @@ import PageLayout from "../../../layouts/PageLayout.astro";
         <div class="p-6" style="border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);">
           <div class="flex flex-col gap-4">
             <div>
-              <label class="ctrl-label" style="margin-bottom:6px;">选择文件</label>
-              <input type="file" id="file-input" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'JetBrains Mono',monospace;font-size:13px;" />
+              <label class="ctrl-label" style="margin-bottom:6px;">选择文件（可多选）</label>
+              <input type="file" id="file-input" multiple style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'JetBrains Mono',monospace;font-size:13px;" />
+              <div id="file-list" class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-top:6px;"></div>
             </div>
             <div>
               <label class="ctrl-label" style="margin-bottom:6px;">自定义提取码（可选，6位数字）</label>
@@ -256,41 +257,48 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     });
   }
 
+  // ── 多文件上传 ──
+  var fileList = document.getElementById('file-list');
+  var selectedFiles = [];
+
+  fileInput.addEventListener('change', function(){
+    selectedFiles = Array.from(fileInput.files);
+    fileList.textContent = selectedFiles.length > 0 ? '已选择 ' + selectedFiles.length + ' 个文件' : '';
+  });
+
   // ── 上传 ──
   btnUpload.addEventListener('click', async function(){
     if(!session){ alert('请先登录'); return; }
-    var file = fileInput.files[0];
-    if(!file){ alert('请选择文件'); return; }
-    if(file.size > 100 * 1024 * 1024){ alert('文件不能超过 100MB'); return; }
-
+    if(selectedFiles.length === 0){ alert('请选择文件'); return; }
     var code = extractCode.value.trim() || '';
     if(code && !/^\d{6}$/.test(code)){ alert('提取码必须是6位数字'); return; }
 
-    var formData = new FormData();
-    formData.append('file', file);
-    formData.append('code', code);
-
     uploadProgress.style.display = 'block';
-    uploadProgress.textContent = '上传中...';
+    var uploaded = 0, failed = [];
 
-    try{
-      var res = await fetch(WORKER_URL + '/upload', {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + session.access_token },
-        body: formData,
-      });
-      var data = await res.json();
-      if(data.success){
-        uploadProgress.style.display = 'none';
-        shareResult.style.display = 'block';
-        resultCode.textContent = data.code;
-        resultLink.textContent = data.url;
-        loadMyRecords();
-      } else {
-        uploadProgress.textContent = '上传失败: ' + (data.error || '未知错误');
-      }
-    }catch(err){
-      uploadProgress.textContent = '网络错误: ' + err.message;
+    for(var i=0;i<selectedFiles.length;i++){
+      var file = selectedFiles[i];
+      if(file.size > 100 * 1024 * 1024){ failed.push(file.name); continue; }
+      uploadProgress.textContent = '上传中 (' + (i+1) + '/' + selectedFiles.length + ')';
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('code', code ? code + '_' + i : '');
+      try{
+        var res = await fetch(WORKER_URL + '/upload', {
+          method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token }, body: fd
+        });
+        var d = await res.json();
+        if(d.success) uploaded++; else failed.push(file.name);
+      } catch(err){ failed.push(file.name); }
+    }
+
+    uploadProgress.style.display = 'none';
+    if(uploaded > 0){
+      shareResult.style.display = 'block';
+      resultCode.textContent = code || '多文件';
+      resultLink.textContent = uploaded + ' 个上传成功' + (failed.length > 0 ? ', ' + failed.length + ' 个失败' : '');
+      loadMyRecords();
+      selectedFiles = []; fileInput.value = ''; fileList.textContent = '';
     }
   });
 
