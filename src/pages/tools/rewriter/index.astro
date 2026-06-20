@@ -78,8 +78,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
 <script>
 (function(){
-  var HF_TOKEN = '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';
-  var HF_MODEL = 'google/flan-t5-large';
+  var HF_URL = 'https://old-hall-b586.3752703718.workers.dev/hf-rewrite';
   var originalText = '';
   var btnAnalyze = document.getElementById('btn-analyze');
   var btnRewrite = document.getElementById('btn-rewrite');
@@ -166,12 +165,9 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     rewriteArea.style.display = 'block';
     rewrittenDisplay.textContent = '正在调用 AI 改写...\n\n(第一次调用可能需要 10-20 秒)';
 
-    fetch('https://api-inference.huggingface.co/models/' + HF_MODEL, {
+    fetch(HF_URL, {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + HF_TOKEN,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         inputs: prompt,
         parameters: {

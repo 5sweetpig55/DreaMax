@@ -6,8 +6,7 @@
       "WebFetch(domain:theadminbar.com)",
       "WebFetch(domain:practicaldev-herokuapp-com.freetls.fastly.net)",
       "WebFetch(domain:lottiefiles.com)",
-      "PowerShell(New-Item *)",
-      "PowerShell(curl.exe -s -o NUL -w \"%{http_code}\" --connect-timeout 8 \"https://bunumbcdivevvtjvsuvk.supabase.co/rest/v1/\" -H \"apikey: sbp_4d8fa5b0a87cbfb300e9a9c2a05af78b95de4c48\" 2>&1)"
+      "PowerShell(New-Item *)"
     ]
   }
 }
