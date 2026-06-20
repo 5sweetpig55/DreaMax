@@ -159,7 +159,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     '很好！你正在变成更好的自己，你的未来对象很欣慰',
   ];
 
-  supabaseFetch = function(path, opts){
+  var supabaseFetch = function(path, opts){
     return fetch(SUPABASE_URL+'/rest/v1/'+path, {
       headers: {'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts&&opts.headers||{})},
       ...(opts||{})
