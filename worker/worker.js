@@ -102,9 +102,9 @@ export default {
 
     // ── 下载 ──
     if (path === '/download' && method === 'GET') {
-      var code = url.searchParams.get('code');
-      if (!code) return new Response(JSON.stringify({ error: '请输入提取码' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-      var res = await supabaseQuery('/fileshare?code=eq.' + code + '&select=*');
+      var downloadCode = url.searchParams.get('code');
+      if (!downloadCode) return new Response(JSON.stringify({ error: '请输入提取码' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      var res = await supabaseQuery('/fileshare?code=eq.' + downloadCode + '&select=*');
       var data = await res.json();
       if (!data || data.length === 0) return new Response(JSON.stringify({ error: '提取码无效' }), { status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
       try {
