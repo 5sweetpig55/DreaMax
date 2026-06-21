@@ -12,7 +12,8 @@
       "PowerShell(& \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" push 2>&1)",
       "PowerShell(curl.exe -s \"https://api.backblazeb2.com/b2api/v2/b2_authorize_account\" -H \"Authorization: Basic NzljZDk0YTY2ZmQ0OjAwNGVkMTExNzlkNDA4NTNiN2UzOWYzZGY1NjAxOWVlYjAyYzliN2U3ZDc=\" 2>&1)",
       "PowerShell(curl.exe -s \"https://api004.backblazeb2.com/b2api/v2/b2_list_buckets\" -Method POST -Headers @{'Authorization'='4_00479cd94a66fd40000000000_01c536ee_508f6d_acct_cnXhFoa2ZHbw6jK1mCx8ZZEafRk=';'Content-Type'='application/json'} -Body '{}' 2>&1)",
-      "PowerShell(curl.exe -s -X DELETE \"https://bunumbcdivevvtjvsuvk.supabase.co/rest/v1/fileshare\" -H \"apikey: sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34\" -H \"Authorization: Bearer sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34\" -H \"Prefer: return=representation\" 2>&1)"
+      "PowerShell(curl.exe -s -X DELETE \"https://bunumbcdivevvtjvsuvk.supabase.co/rest/v1/fileshare\" -H \"apikey: sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34\" -H \"Authorization: Bearer sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34\" -H \"Prefer: return=representation\" 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" add .; & \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" commit -m \"revert: back to direct worker URL, remove broken proxy\"; & \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" push 2>&1 | Select-Object -Last 3)"
     ]
   }
 }
