@@ -78,12 +78,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         if(d.error || d.e){ errMsg.textContent = '提取码无效'; errMsg.style.display='block'; btnGet.textContent='提取'; btnGet.disabled=false; return; }
         inputArea.style.display = 'none';
         dlArea.style.display = 'block';
-        dlFilename.textContent = d.filename || d.fn || '未知文件';
-        dlFilesize.textContent = formatSize(d.filesize || d.sz || 0);
-        dlBtn.href = d.url || '';
-        dlBtn.setAttribute('download', d.filename || d.fn || 'download');
+        dlFilename.textContent = d.filename || '未知文件';
+        dlFilesize.textContent = formatSize(d.filesize || 0);
+        // 用 Worker 代理下载，不走 B2 直链
+        dlBtn.href = WORKER_URL + '/proxy?code=' + code;
+        dlBtn.setAttribute('download', d.filename || 'download');
       })
-      .catch(function(e){ errMsg.textContent = '网络错误'; errMsg.style.display='block'; })
+      .catch(function(e){ errMsg.textContent = '获取失败，请重试'; errMsg.style.display='block'; })
       .finally(function(){ btnGet.textContent='提取'; btnGet.disabled=false; });
   }
 

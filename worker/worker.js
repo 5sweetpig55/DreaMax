@@ -18,6 +18,7 @@ export default {
       if (path === '/my/list' && mt === 'GET') return await ml(env);
       if (path === '/admin/list' && mt === 'GET') return await al(env);
       if (path === '/admin/delete' && mt === 'DELETE') return await adel(url, env);
+      if (path === '/proxy' && mt === 'GET') return await proxy(url, env);
       return new Response(JSON.stringify({ error: '404' }), { status: 404, headers: cr() });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: cr() });
@@ -108,3 +109,25 @@ async function dl(url, env) {
 async function ml(env) { var r = await sq(env, '/fileshare?order=created_at.desc'); var d = await r.json(); return new Response(JSON.stringify(d || []), { headers: cr() }); }
 async function al(env) { var r = await sq(env, '/fileshare?order=created_at.desc'); var d = await r.json(); return new Response(JSON.stringify(d || []), { headers: cr() }); }
 async function adel(url, env) { var id = url.searchParams.get('id'); if (!id) return new Response(JSON.stringify({ error: 'no id' }), { status: 400, headers: cr() }); await sq(env, '/fileshare?id=eq.' + id, null, 'DELETE'); return new Response(JSON.stringify({ success: true }), { headers: cr() }); }
+async function proxy(url, env) {
+  var c = url.searchParams.get('code');
+  if (!c) return new Response('no code', { status: 400, headers: cr() });
+  var r = await sq(env, '/fileshare?code=eq.' + c + '&select=*');
+  var d = await r.json();
+  if (!d || !d.length) return new Response('not found', { status: 404, headers: cr() });
+  var a = await ba(env);
+  var bid = await gb(env, a);
+  var ar = await fetch(a.a + '/b2_get_download_authorization', {
+    method: 'POST', headers: { 'Authorization': a.t, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ bucketId: bid, fileNamePrefix: d[0].storage_path, validDurationInSeconds: 3600 })
+  });
+  var ad = await ar.json();
+  var dlUrl = a.dl + '/file/' + env.B2_BUCKET + '/' + d[0].storage_path + '?Authorization=' + encodeURIComponent(ad.authorizationToken);
+  var fileRes = await fetch(dlUrl);
+  if (!fileRes.ok) return new Response('download failed', { status: 500, headers: cr() });
+  var h = cr();
+  h['Content-Type'] = 'application/octet-stream';
+  h['Content-Disposition'] = 'attachment; filename="' + (d[0].filename || 'download') + '"';
+  h['Access-Control-Expose-Headers'] = 'Content-Disposition';
+  return new Response(fileRes.body, { headers: h });
+}
