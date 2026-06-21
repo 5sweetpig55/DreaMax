@@ -267,7 +267,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     if(selectedFiles.length === 0){ alert('请选择文件'); return; }
 
     uploadProgress.style.display = 'block';
-    var uploaded = 0, failed = [];
+    var uploaded = 0, failed = [], codes = [];
 
     for(var i=0;i<selectedFiles.length;i++){
       var file = selectedFiles[i];
@@ -280,15 +280,20 @@ import PageLayout from "../../../layouts/PageLayout.astro";
           method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token }, body: fd
         });
         var d = await res.json();
-        if(d.success) uploaded++; else failed.push(file.name);
+        if(d.ok){ uploaded++; codes.push(d.code); } else { failed.push(file.name); }
       } catch(err){ failed.push(file.name); }
     }
 
     uploadProgress.style.display = 'none';
     if(uploaded > 0){
       shareResult.style.display = 'block';
-      resultCode.textContent = code || '多文件';
-      resultLink.textContent = uploaded + ' 个上传成功' + (failed.length > 0 ? ', ' + failed.length + ' 个失败' : '');
+      if(codes.length === 1){
+        resultCode.textContent = codes[0];
+        resultLink.textContent = '提取码: ' + codes[0] + '（在下方输入提取码下载）';
+      } else {
+        resultCode.textContent = '多文件';
+        resultLink.textContent = codes.map(function(c){ return c; }).join('、');
+      }
       loadMyRecords();
       selectedFiles = []; fileInput.value = ''; fileList.textContent = '';
     }
@@ -302,16 +307,19 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     try{
       var res = await fetch(WORKER_URL + '/download?code=' + code);
       var data = await res.json();
-      if(data.error){
+      if(data.e || data.error){
         downloadInfo.style.display = 'none';
         downloadErr.style.display = 'block';
         return;
       }
       downloadErr.style.display = 'none';
       downloadInfo.style.display = 'block';
-      fileInfo.innerHTML = '📄 ' + data.filename + ' (' + formatSize(data.filesize) + ')';
-      downloadBtn.href = data.url;
-      downloadBtn.setAttribute('download', data.filename);
+      var fname = data.fn || data.filename || '未知文件';
+      var fsize = data.sz || data.filesize || 0;
+      var furl = data.url || '';
+      fileInfo.innerHTML = '📄 ' + fname + ' (' + formatSize(fsize) + ')';
+      downloadBtn.href = furl;
+      downloadBtn.setAttribute('download', fname);
     }catch(err){
       downloadErr.style.display = 'block';
       downloadErr.textContent = '网络错误';
