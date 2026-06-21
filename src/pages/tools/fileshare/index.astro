@@ -211,9 +211,9 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       errorEl.style.display = 'none';
     }
 
-    toggleEl.addEventListener('click', toggleMode);
-    document.getElementById('auth-close').addEventListener('click', function(){ overlay.remove(); });
-    overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+    toggleEl.addEventListener('click', function(e){ e.stopPropagation(); toggleMode(); });
+    document.getElementById('auth-close').addEventListener('click', function(e){ e.stopPropagation(); overlay.remove(); });
+    overlay.addEventListener('mousedown', function(e){ if(e.target===overlay) overlay.remove(); });
 
     submitBtn.addEventListener('click', async function(){
       var email = emailInput.value.trim();
