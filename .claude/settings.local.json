@@ -9,7 +9,9 @@
       "PowerShell(New-Item *)",
       "PowerShell(curl.exe -s -o NUL -w \"%{http_code}\" --connect-timeout 8 \"https://bunumbcdivevvtjvsuvk.supabase.co/rest/v1/\" -H \"apikey: sbp_4d8fa5b0a87cbfb300e9a9c2a05af78b95de4c48\" 2>&1)",
       "PowerShell(& \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" add .; & \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" commit -m \"fix: multi-file upload, remove drag\" 2>&1 | Select-Object -Last 3)",
-      "PowerShell(& \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" push 2>&1)"
+      "PowerShell(& \"C:\\\\Program Files\\\\Git\\\\bin\\\\git.exe\" push 2>&1)",
+      "PowerShell(curl.exe -s \"https://api.backblazeb2.com/b2api/v2/b2_authorize_account\" -H \"Authorization: Basic NzljZDk0YTY2ZmQ0OjAwNGVkMTExNzlkNDA4NTNiN2UzOWYzZGY1NjAxOWVlYjAyYzliN2U3ZDc=\" 2>&1)",
+      "PowerShell(curl.exe -s \"https://api004.backblazeb2.com/b2api/v2/b2_list_buckets\" -Method POST -Headers @{'Authorization'='4_00479cd94a66fd40000000000_01c536ee_508f6d_acct_cnXhFoa2ZHbw6jK1mCx8ZZEafRk=';'Content-Type'='application/json'} -Body '{}' 2>&1)"
     ]
   }
 }

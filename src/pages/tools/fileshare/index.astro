@@ -30,6 +30,10 @@ import PageLayout from "../../../layouts/PageLayout.astro";
               <input type="file" id="file-input" multiple style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'JetBrains Mono',monospace;font-size:13px;" />
               <div id="file-list" class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-top:6px;"></div>
             </div>
+            <div>
+              <label class="ctrl-label" style="margin-bottom:6px;">文件说明（方便查找）</label>
+              <input type="text" id="file-note" placeholder="如: 张三的简历、项目申请书" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;" />
+            </div>
             <button id="btn-upload" class="btn btn-pink" style="padding:12px 0;justify-content:center;width:100%;">上传并生成链接</button>
             <div id="upload-progress" class="font-mono text-xs" style="color:rgba(255,255,255,0.25);display:none;">上传中...</div>
           </div>
@@ -268,6 +272,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
     uploadProgress.style.display = 'block';
     var uploaded = 0, failed = [], codes = [];
+    var note = document.getElementById('file-note').value.trim();
 
     for(var i=0;i<selectedFiles.length;i++){
       var file = selectedFiles[i];
@@ -275,6 +280,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       uploadProgress.textContent = '上传中 (' + (i+1) + '/' + selectedFiles.length + ')';
       var fd = new FormData();
       fd.append('file', file);
+      fd.append('note', note);
       try{
         var res = await fetch(WORKER_URL + '/upload', {
           method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token }, body: fd
@@ -294,10 +300,11 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       shareResult.style.display = 'block';
       if(codes.length === 1){
         resultCode.textContent = codes[0];
-        resultLink.textContent = '提取码: ' + codes[0] + '（在下方输入提取码下载）';
+        var shareUrl = window.location.origin + '/share?code=' + codes[0];
+        resultLink.innerHTML = '<a href="' + shareUrl + '" target="_blank" style="color:#66d9ed;text-decoration:underline;">' + shareUrl + '</a>';
       } else {
         resultCode.textContent = '多文件';
-        resultLink.textContent = codes.map(function(c){ return c; }).join('、');
+        resultLink.textContent = codes.map(function(c){ return '提取码: ' + c; }).join(' | ');
       }
       loadMyRecords();
       selectedFiles = []; fileInput.value = ''; fileList.textContent = '';
@@ -345,15 +352,16 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       }
       var html = '<table style="width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:11px;">';
       html += '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);">';
+      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">说明</th>';
       html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">提取码</th>';
-      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">文件名</th>';
       html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">大小</th>';
       html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">时间</th>';
       html += '</tr></thead><tbody>';
       data.forEach(function(r){
+        var displayName = r.note || r.filename || '未命名';
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">';
+        html += '<td style="padding:6px 8px;color:rgba(255,255,255,0.7);max-width:140px;overflow:hidden;text-overflow:ellipsis;">'+displayName+'</td>';
         html += '<td style="padding:6px 8px;color:#66d9ed;">'+r.code+'</td>';
-        html += '<td style="padding:6px 8px;color:rgba(255,255,255,0.6);max-width:180px;overflow:hidden;text-overflow:ellipsis;">'+r.filename+'</td>';
         html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.4);">'+formatSize(r.filesize)+'</td>';
         html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.3);">'+(r.created_at||'').substring(0,10)+'</td>';
         html += '</tr>';
@@ -377,17 +385,18 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       }
       var html = '<table style="width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:11px;">';
       html += '<thead><tr style="border-bottom:1px solid rgba(255,255,255,0.06);">';
+      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">说明</th>';
       html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">提取码</th>';
-      html += '<th style="padding:6px 8px;text-align:left;color:rgba(255,255,255,0.25);">文件名</th>';
       html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">大小</th>';
       html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">上传者</th>';
       html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">时间</th>';
       html += '<th style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.25);">操作</th>';
       html += '</tr></thead><tbody>';
       data.forEach(function(r){
+        var displayName = r.note || r.filename || '未命名';
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">';
+        html += '<td style="padding:6px 8px;color:rgba(255,255,255,0.7);max-width:120px;overflow:hidden;text-overflow:ellipsis;">'+displayName+'</td>';
         html += '<td style="padding:6px 8px;color:#66d9ed;font-weight:600;">'+r.code+'</td>';
-        html += '<td style="padding:6px 8px;color:rgba(255,255,255,0.6);max-width:150px;overflow:hidden;text-overflow:ellipsis;">'+r.filename+'</td>';
         html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.4);">'+formatSize(r.filesize)+'</td>';
         html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.3);">'+r.uploaded_by+'</td>';
         html += '<td style="padding:6px 8px;text-align:center;color:rgba(255,255,255,0.3);">'+(r.created_at||'').substring(0,10)+'</td>';
@@ -414,9 +423,10 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
   // ── 复制 ──
   btnCopyLink.addEventListener('click', function(){
-    var link = resultLink.textContent;
-    if(link){
-      navigator.clipboard.writeText(link);
+    var link = resultLink.querySelector('a');
+    var url = link ? link.href : (resultLink.textContent || '');
+    if(url){
+      navigator.clipboard.writeText(url);
       btnCopyLink.textContent = '已复制';
       setTimeout(function(){ btnCopyLink.textContent = '复制链接'; }, 1500);
     }
