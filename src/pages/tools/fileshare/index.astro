@@ -190,70 +190,66 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     var overlay = document.createElement('div');
     overlay.id = 'auth-overlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;';
-    overlay.innerHTML = '        <div style="background:linear-gradient(135deg,#13131e,#1a1a2e);border:1px solid rgba(102,217,237,0.1);border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.4);position:relative;overflow:hidden;">          <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(102,217,237,0.06),transparent 70%);border-radius:50%;"></div>          <div style="position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(227,27,109,0.04),transparent 70%);border-radius:50%;"></div>          <div style="text-align:center;margin-bottom:28px;position:relative;z-index:1;">            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,rgba(102,217,237,0.15),rgba(102,217,237,0.05));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1px solid rgba(102,217,237,0.1);">              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#66d9ed" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>            </div>            <h2 class="font-sans text-xl font-semibold text-white" style="margin:0;" id="auth-title">登录 DreaMax 网盘</h2>            <p class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-top:6px;" id="auth-sub">输入邮箱和密码</p>          </div>          <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:14px;">            <div>              <label class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-bottom:4px;display:block;">邮箱地址</label>              <input type="email" id="auth-email" placeholder="your@email.com" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:#fff;font-family:JetBrains Mono,monospace;font-size:13px;outline:none;box-sizing:border-box;transition:border-color 0.2s;" class="auth-input" />            </div>            <div>              <label class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-bottom:4px;display:block;">密码</label>              <input type="password" id="auth-pwd" placeholder="••••••••" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:#fff;font-family:JetBrains Mono,monospace;font-size:13px;outline:none;box-sizing:border-box;transition:border-color 0.2s;" class="auth-input" />            </div>          </div>          <div id="auth-error" style="display:none;margin-top:12px;padding:8px 12px;border-radius:8px;background:rgba(227,27,109,0.06);border:1px solid rgba(227,27,109,0.15);font-family:JetBrains Mono,monospace;font-size:12px;color:#e31b6d;position:relative;z-index:1;"></div>          <button id="auth-submit" style="width:100%;margin-top:20px;padding:14px 0;border-radius:10px;border:none;background:linear-gradient(135deg,#e31b6d,#d62d80);color:#fff;font-family:JetBrains Mono,monospace;font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s;position:relative;z-index:1;">登录</button>          <div style="text-align:center;margin-top:16px;position:relative;z-index:1;">            <p class="font-mono text-xs" style="color:rgba(255,255,255,0.2);margin:0;cursor:pointer;" id="auth-toggle">没有账号？<span style="color:#66d9ed;transition:color 0.2s;cursor:pointer;">注册</span></p>            <p class="font-mono text-xs" style="color:rgba(255,255,255,0.12);margin-top:8px;cursor:pointer;" id="auth-close">取消</p>          </div>        </div>';
+    overlay.innerHTML = '<div style="background:linear-gradient(135deg,#13131e,#1a1a2e);border:1px solid rgba(102,217,237,0.1);border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.4);position:relative;overflow:hidden;"> <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(102,217,237,0.06),transparent 70%);border-radius:50%;"></div> <div style="position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(227,27,109,0.04),transparent 70%);border-radius:50%;"></div> <div style="text-align:center;position:relative;z-index:1;"> <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,rgba(102,217,237,0.12),rgba(102,217,237,0.03));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:1px solid rgba(102,217,237,0.08);"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#66d9ed" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> </div> <h2 class="font-sans text-xl font-semibold text-white" style="margin:0;">DreaMax 网盘</h2> <p class="font-mono text-xs" style="color:rgba(255,255,255,0.25);margin-top:8px;margin-bottom:24px;">输入邮箱，一键登录/注册</p> </div> <div style="position:relative;z-index:1;"> <input type="email" id="auth-email" placeholder="your@email.com" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:#fff;font-family:JetBrains Mono,monospace;font-size:13px;outline:none;box-sizing:border-box;transition:border-color 0.2s;" class="auth-input" /> </div> <div id="auth-error" style="display:none;margin-top:12px;padding:8px 12px;border-radius:8px;background:rgba(227,27,109,0.06);border:1px solid rgba(227,27,109,0.15);font-family:JetBrains Mono,monospace;font-size:12px;color:#e31b6d;position:relative;z-index:1;"></div> <button id="auth-submit" style="width:100%;margin-top:20px;padding:14px 0;border-radius:10px;border:none;background:linear-gradient(135deg,#e31b6d,#d62d80);color:#fff;font-family:JetBrains Mono,monospace;font-size:14px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s;position:relative;z-index:1;">登录 / 注册</button> <p class="font-mono text-xs" style="color:rgba(255,255,255,0.12);text-align:center;margin-top:14px;cursor:pointer;position:relative;z-index:1;" id="auth-close">取消</p> </div>';
     document.body.appendChild(overlay);
 
-    var isLogin = true;
     var emailInput = document.getElementById('auth-email');
-    var pwdInput = document.getElementById('auth-pwd');
-    var titleEl = document.getElementById('auth-title');
-    var subEl = document.getElementById('auth-sub');
     var submitBtn = document.getElementById('auth-submit');
     var errorEl = document.getElementById('auth-error');
-    var toggleEl = document.getElementById('auth-toggle');
 
-    function toggleMode(){
-      isLogin = !isLogin;
-      titleEl.textContent = isLogin ? '登录' : '注册';
-      subEl.textContent = isLogin ? '输入邮箱和密码' : '注册后将收到验证邮件';
-      submitBtn.textContent = isLogin ? '登录' : '注册';
-      toggleEl.innerHTML = isLogin ? '没有账号？<span style="color:#66d9ed;">注册</span>' : '已有账号？<span style="color:#66d9ed;">登录</span>';
-      errorEl.style.display = 'none';
-    }
-
-    toggleEl.addEventListener('click', function(e){ e.stopPropagation(); toggleMode(); });
     document.getElementById('auth-close').addEventListener('click', function(e){ e.stopPropagation(); overlay.remove(); });
     overlay.addEventListener('mousedown', function(e){ if(e.target===overlay) overlay.remove(); });
 
     submitBtn.addEventListener('click', async function(){
       var email = emailInput.value.trim();
-      var pwd = pwdInput.value.trim();
-      if(!email || !pwd){ errorEl.textContent = '请填写完整'; errorEl.style.display='block'; return; }
+      if(!email){ errorEl.textContent = '请输入邮箱'; errorEl.style.display='block'; return; }
       errorEl.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.textContent = '处理中...';
 
+      var password = 'dreamax_' + Math.random().toString(36).slice(2,8);
+
       try {
-        if(isLogin){
-          // 登录
-          var res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+        // 尝试登录
+        var res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: password })
+        });
+        var data = await res.json();
+        if(data.error){
+          // 登录失败，尝试注册
+          var signRes = await fetch(SUPABASE_URL + '/auth/v1/signup', {
             method: 'POST',
             headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: pwd })
+            body: JSON.stringify({ email, password: password })
           });
-          var data = await res.json();
-          if(data.error){ errorEl.textContent = data.error_description || data.msg || '登录失败'; errorEl.style.display='block'; submitBtn.disabled=false; submitBtn.textContent='登录'; return; }
-          session = { access_token: data.access_token, refresh_token: data.refresh_token, user: data.user };
-          localStorage.setItem('dreamax_sb_session', JSON.stringify(session));
-          overlay.remove();
-          updateUI(true, data.user.email);
-        } else {
-          // 注册
-          var res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+          var signData = await signRes.json();
+          if(signData.error){
+            errorEl.textContent = signData.error_description || signData.msg || '操作失败';
+            errorEl.style.display='block'; submitBtn.disabled=false; submitBtn.textContent='登录 / 注册'; return;
+          }
+          // 注册成功，自动登录
+          var loginRes = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
             method: 'POST',
             headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: pwd })
+            body: JSON.stringify({ email, password: password })
           });
-          var data = await res.json();
-          if(data.error){ errorEl.textContent = data.error_description || data.msg || '注册失败'; errorEl.style.display='block'; submitBtn.disabled=false; submitBtn.textContent='注册'; return; }
-          alert('注册成功！请查看邮箱验证邮件（可能被归类到垃圾箱），验证后即可登录。');
-          overlay.remove();
+          data = await loginRes.json();
+          if(data.error){
+            errorEl.textContent = '注册成功，请查看邮箱验证后登录（密码已发送到你的邮箱）';
+            errorEl.style.display='block'; submitBtn.disabled=false; submitBtn.textContent='登录 / 注册'; return;
+          }
         }
+        session = { access_token: data.access_token, refresh_token: data.refresh_token, user: data.user };
+        localStorage.setItem('dreamax_sb_session', JSON.stringify(session));
+        overlay.remove();
+        updateUI(true, data.user.email);
       } catch(err){
         errorEl.textContent = '网络错误'; errorEl.style.display='block';
       }
       submitBtn.disabled = false;
-      submitBtn.textContent = isLogin ? '登录' : '注册';
+      submitBtn.textContent = '登录 / 注册';
     });
   }
 
