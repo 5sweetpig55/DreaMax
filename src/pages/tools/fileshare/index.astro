@@ -279,12 +279,17 @@ import PageLayout from "../../../layouts/PageLayout.astro";
         var res = await fetch(WORKER_URL + '/upload', {
           method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token }, body: fd
         });
-        var d = await res.json();
-        if(d.ok){ uploaded++; codes.push(d.code); } else { failed.push(file.name); }
-      } catch(err){ failed.push(file.name); }
+        var txt = await res.text();
+        var d;
+        try{ d = JSON.parse(txt); } catch(e){ d = {}; }
+        if(d.success || d.ok){ uploaded++; codes.push(d.code || ''); }
+        else { failed.push(file.name + ' (' + (d.error || txt || res.status) + ')'); }
+        uploadProgress.textContent = d.error || txt || '上传中...';
+      } catch(err){ failed.push(file.name + '(err:' + err.message + ')'); }
     }
 
     uploadProgress.style.display = 'none';
+    if(failed.length > 0){ uploadProgress.style.display = 'block'; uploadProgress.textContent = '失败: ' + failed.join('; '); }
     if(uploaded > 0){
       shareResult.style.display = 'block';
       if(codes.length === 1){
