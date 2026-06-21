@@ -182,9 +182,12 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
   if(loggedUser) initApp();
 
-  document.getElementById('btn-login').addEventListener('click',login);
-  document.getElementById('login-name').addEventListener('keydown',function(e){if(e.key==='Enter')login();});
-  document.getElementById('login-pwd').addEventListener('keydown',function(e){if(e.key==='Enter')login();});
+  var btnLogin = document.getElementById('btn-login');
+  if(btnLogin){ btnLogin.addEventListener('click',login); }
+  var loginName = document.getElementById('login-name');
+  if(loginName){ loginName.addEventListener('keydown',function(e){if(e.key==='Enter')login();}); }
+  var loginPwd = document.getElementById('login-pwd');
+  if(loginPwd){ loginPwd.addEventListener('keydown',function(e){if(e.key==='Enter')login();}); }
 
   function login(){
     var name=document.getElementById('login-name').value.trim();
@@ -196,14 +199,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     initApp();
   }
 
-  document.getElementById('btn-register').addEventListener('click',function(){
-    var name=prompt('新用户名:');if(!name)return;
-    var pwd=prompt('密码:');if(!pwd)return;
-    sessionStorage.setItem(USER_KEY,name);loggedUser=name;
-    document.getElementById('login-gate').style.display='none';
-    document.getElementById('main-app').style.display='block';
-    initApp();
-  });
 
   function isAdmin(){return ADMIN_USERS.includes(loggedUser);}
 

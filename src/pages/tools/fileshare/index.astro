@@ -30,10 +30,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
               <input type="file" id="file-input" multiple style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'JetBrains Mono',monospace;font-size:13px;" />
               <div id="file-list" class="font-mono text-xs" style="color:rgba(255,255,255,0.3);margin-top:6px;"></div>
             </div>
-            <div>
-              <label class="ctrl-label" style="margin-bottom:6px;">自定义提取码（可选，6位数字）</label>
-              <input type="text" id="extract-code" maxlength="6" placeholder="如: 888888" style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;box-sizing:border-box;" />
-            </div>
             <button id="btn-upload" class="btn btn-pink" style="padding:12px 0;justify-content:center;width:100%;">上传并生成链接</button>
             <div id="upload-progress" class="font-mono text-xs" style="color:rgba(255,255,255,0.25);display:none;">上传中...</div>
           </div>
@@ -94,7 +90,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
   var btnAuth = document.getElementById('btn-auth');
   var uploadSection = document.getElementById('upload-section');
   var fileInput = document.getElementById('file-input');
-  var extractCode = document.getElementById('extract-code');
   var btnUpload = document.getElementById('btn-upload');
   var uploadProgress = document.getElementById('upload-progress');
   var shareResult = document.getElementById('share-result');
@@ -270,8 +265,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
   btnUpload.addEventListener('click', async function(){
     if(!session){ alert('请先登录'); return; }
     if(selectedFiles.length === 0){ alert('请选择文件'); return; }
-    var code = extractCode.value.trim() || '';
-    if(code && !/^\d{6}$/.test(code)){ alert('提取码必须是6位数字'); return; }
 
     uploadProgress.style.display = 'block';
     var uploaded = 0, failed = [];
@@ -282,7 +275,6 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       uploadProgress.textContent = '上传中 (' + (i+1) + '/' + selectedFiles.length + ')';
       var fd = new FormData();
       fd.append('file', file);
-      fd.append('code', code ? code + '_' + i : '');
       try{
         var res = await fetch(WORKER_URL + '/upload', {
           method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token }, body: fd

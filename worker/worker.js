@@ -1,141 +1,140 @@
-/* DreaMax 文件速递 — Cloudflare Worker */
-/* 复制全部内容，粘贴到 Worker 编辑器，点 Save and Deploy */
+// DreaMax 网盘 Worker
+// 需要的环境变量（已在 Cloudflare 中设置）：
+// B2_KEY_ID, B2_APP_KEY, B2_BUCKET, SUPABASE_URL, SUPABASE_ANON, ADMIN_USERS, HF_TOKEN
 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const path = url.pathname;
-    const method = request.method;
-    const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' };
-    if (method === 'OPTIONS') return new Response(null, { headers: cors });
+addEventListener('fetch', function(ev) {
+  ev.respondWith(handle(ev));
+});
 
-    try {
-      if (path === '/upload' && method === 'POST') return await handleUpload(request, env, cors);
-      if (path === '/download' && method === 'GET') return await handleDownload(url, env, cors);
-      if (path === '/my/list' && method === 'GET') return await handleMyList(request, env, cors);
-      if (path === '/admin/list' && method === 'GET') return await handleAdminList(request, env, cors);
-      if (path === '/admin/delete' && method === 'DELETE') return await handleAdminDelete(url, request, env, cors);
-      if (path === '/hf-rewrite' && method === 'POST') return await handleHfRewrite(request, env, cors);
-      return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json', ...cors } });
-    } catch (err) {
-      return new Response(JSON.stringify({ error: err.message, stack: err.stack }), { status: 500, headers: { 'Content-Type': 'application/json', ...cors } });
-    }
-  },
-};
+async function handle(ev) {
+  var req = ev.request;
+  var url = new URL(req.url);
+  var path = url.pathname;
+  var mt = req.method;
+  var h = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+  };
+  if (mt === 'OPTIONS') return new Response(null, { status: 204, headers: h });
 
-async function b2Auth(env) {
-  var b = btoa(env.B2_KEY_ID + ':' + env.B2_APP_KEY);
-  var r = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', { headers: { 'Authorization': 'Basic ' + b } });
-  var d = await r.json();
-  if (!r.ok) throw new Error('B2 auth: ' + (d.message || r.status));
-  return { token: d.authorizationToken, apiUrl: d.apiUrl + '/b2api/v2', downloadUrl: d.downloadUrl };
+  try {
+    if (path === '/upload' && mt === 'POST') return await up(req, h);
+    if (path === '/download' && mt === 'GET') return await dl(url, h);
+    if (path === '/my/list' && mt === 'GET') return await ml(h);
+    if (path === '/admin/list' && mt === 'GET') return await al(h);
+    if (path === '/admin/delete' && mt === 'DELETE') return await adel(url, h);
+    if (path === '/hf-rewrite' && mt === 'POST') return await hr(req, h);
+    return new Response(JSON.stringify({ e: '404' }), { status: 404, headers: h });
+  } catch (e) {
+    return new Response(JSON.stringify({ e: e.message }), { status: 500, headers: h });
+  }
 }
 
-async function getBucketId(env, ba) {
-  var r = await fetch(ba.apiUrl + '/b2_list_buckets', { method: 'POST', headers: { 'Authorization': ba.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ bucketName: env.B2_BUCKET }) });
+async function b2_auth() {
+  var r = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
+    headers: { 'Authorization': 'Basic ' + btoa(B2_KEY_ID + ':' + B2_APP_KEY) }
+  });
   var d = await r.json();
-  if (!r.ok) throw new Error('List buckets: ' + (d.message || r.status));
-  if (!d.buckets || d.buckets.length === 0) throw new Error('Bucket "' + env.B2_BUCKET + '" not found');
+  if (!r.ok) throw new Error('b2');
+  return { t: d.authorizationToken, api: d.apiUrl + '/b2api/v2', dl: d.downloadUrl };
+}
+
+function sb(path, body, method) {
+  var hd = {
+    'apikey': SUPABASE_ANON,
+    'Authorization': 'Bearer ' + SUPABASE_ANON,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+  var op = { method: method || 'GET', headers: hd };
+  if (body) op.body = body;
+  return fetch(SUPABASE_URL + '/rest/v1/' + path, op);
+}
+
+function make6() {
+  var x = '0123456789', r = '';
+  for (var i = 0; i < 6; i++) r += x[Math.floor(Math.random() * 10)];
+  return r;
+}
+
+async function getBid(ba) {
+  var r = await fetch(ba.api + '/b2_list_buckets', { method: 'POST', headers: { 'Authorization': ba.t, 'Content-Type': 'application/json' }, body: '{"bucketName":"' + B2_BUCKET + '"}' });
+  var d = await r.json();
+  if (!d.buckets || !d.buckets.length) throw new Error('bucket');
   return d.buckets[0].bucketId;
 }
 
-async function sq(env, path, opts) {
-  return fetch(env.SUPABASE_URL + '/rest/v1/' + path, {
-    headers: { 'apikey': env.SUPABASE_ANON, 'Authorization': 'Bearer ' + env.SUPABASE_ANON, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(opts && opts.headers || {}) },
-    ...(opts || {}),
-  });
-}
-
-async function getAuthUser(request, env) {
-  var h = request.headers.get('Authorization');
-  if (!h) return null;
-  try {
-    var r = await fetch(env.SUPABASE_URL + '/auth/v1/user', { headers: { 'Authorization': 'Bearer ' + h.replace('Bearer ', ''), 'apikey': env.SUPABASE_ANON } });
-    if (!r.ok) return null;
-    return await r.json();
-  } catch { return null; }
-}
-
-function gc(l) { var x = '0123456789', r = ''; for (var i = 0; i < l; i++) r += x[Math.floor(Math.random() * x.length)]; return r; }
-
-async function handleUpload(request, env, cors) {
-  var user = await getAuthUser(request, env);
-  if (!user) return new Response(JSON.stringify({ error: '请先登录' }), { status: 401, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  var fd = await request.formData();
-  var file = fd.get('file');
-  if (!file) return new Response(JSON.stringify({ error: '请选择文件' }), { status: 400, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  var code = fd.get('code') || gc(6);
-  var ext = file.name.split('.').pop();
-  var fileName = code + '.' + ext;
-  var fb = await file.arrayBuffer();
-
-  var ba = await b2Auth(env);
-  var bid = await getBucketId(env, ba);
-
-  var ur = await fetch(ba.apiUrl + '/b2_get_upload_url', { method: 'POST', headers: { 'Authorization': ba.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ bucketId: bid }) });
+async function up(req, h) {
+  var fd = await req.formData();
+  var f = fd.get('file');
+  if (!f) return new Response(JSON.stringify({ e: 'no file' }), { status: 400, headers: h });
+  var code = make6();
+  var ext = f.name.split('.').pop();
+  var fn = code + '.' + ext;
+  var buf = await f.arrayBuffer();
+  var ba = await b2_auth();
+  var id = await getBid(ba);
+  var ur = await fetch(ba.api + '/b2_get_upload_url', { method: 'POST', headers: { 'Authorization': ba.t, 'Content-Type': 'application/json' }, body: '{"bucketId":"' + id + '"}' });
   var ud = await ur.json();
-  if (!ur.ok) return new Response(JSON.stringify({ error: '获取上传地址失败: ' + (ud.message || ur.status) }), { status: 500, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  var up = await fetch(ud.uploadUrl, { method: 'POST', headers: { 'Authorization': ud.authorizationToken, 'X-Bz-File-Name': fileName, 'Content-Type': 'application/octet-stream', 'X-Bz-Content-Sha1': 'do_not_verify' }, body: fb });
-  var uj = await up.json();
-  if (!up.ok) return new Response(JSON.stringify({ error: '上传到B2失败: ' + (uj.message || up.status) }), { status: 500, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  await sq(env, '/fileshare', { method: 'POST', body: JSON.stringify({ code, filename: file.name, filesize: file.size, filetype: file.type || ext, storage_path: fileName, uploaded_by: user.email }) });
-
-  return new Response(JSON.stringify({ success: true, code, url: request.url.origin + '/download?code=' + code }), { headers: { 'Content-Type': 'application/json', ...cors } });
-}
-
-async function handleDownload(url, env, cors) {
-  var dc = url.searchParams.get('code');
-  if (!dc) return new Response(JSON.stringify({ error: '请输入提取码' }), { status: 400, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  var r = await sq(env, '/fileshare?code=eq.' + dc + '&select=*');
-  var d = await r.json();
-  if (!d || d.length === 0) return new Response(JSON.stringify({ error: '提取码无效' }), { status: 404, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  var ba = await b2Auth(env);
-  var bid = await getBucketId(env, ba);
-
-  var ar = await fetch(ba.apiUrl + '/b2_get_download_authorization', { method: 'POST', headers: { 'Authorization': ba.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ bucketId: bid, fileNamePrefix: d[0].storage_path, validDurationInSeconds: 3600 }) });
-  var ad = await ar.json();
-  if (!ar.ok) return new Response(JSON.stringify({ error: '获取下载授权失败' }), { status: 500, headers: { 'Content-Type': 'application/json', ...cors } });
-
-  var dl = ba.downloadUrl + '/file/' + env.B2_BUCKET + '/' + d[0].storage_path + '?Authorization=' + encodeURIComponent(ad.authorizationToken);
-  return new Response(JSON.stringify({ filename: d[0].filename, filesize: d[0].filesize, url: dl }), { headers: { 'Content-Type': 'application/json', ...cors } });
-}
-
-async function handleMyList(request, env, cors) {
-  var user = await getAuthUser(request, env);
-  if (!user) return new Response(JSON.stringify({ error: '请先登录' }), { status: 401, headers: { 'Content-Type': 'application/json', ...cors } });
-  var r = await sq(env, '/fileshare?uploaded_by=eq.' + encodeURIComponent(user.email) + '&order=created_at.desc');
-  var d = await r.json();
-  return new Response(JSON.stringify(d || []), { headers: { 'Content-Type': 'application/json', ...cors } });
-}
-
-async function handleAdminList(request, env, cors) {
-  var user = await getAuthUser(request, env);
-  if (!user || !(env.ADMIN_USERS || '').split(',').includes(user.email)) return new Response(JSON.stringify({ error: '无权限' }), { status: 403, headers: { 'Content-Type': 'application/json', ...cors } });
-  var r = await sq(env, '/fileshare?order=created_at.desc');
-  var d = await r.json();
-  return new Response(JSON.stringify(d || []), { headers: { 'Content-Type': 'application/json', ...cors } });
-}
-
-async function handleAdminDelete(url, request, env, cors) {
-  var user = await getAuthUser(request, env);
-  if (!user || !(env.ADMIN_USERS || '').split(',').includes(user.email)) return new Response(JSON.stringify({ error: '无权限' }), { status: 403, headers: { 'Content-Type': 'application/json', ...cors } });
-  var id = url.searchParams.get('id');
-  if (!id) return new Response(JSON.stringify({ error: '缺少 ID' }), { status: 400, headers: { 'Content-Type': 'application/json', ...cors } });
-  await sq(env, '/fileshare?id=eq.' + id, { method: 'DELETE' });
-  return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json', ...cors } });
-}
-
-async function handleHfRewrite(request, env, cors) {
-  var body = await request.json();
-  var hfRes = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-large', {
-    method: 'POST', headers: { 'Authorization': 'Bearer ' + env.HF_TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+  if (!ur.ok) return new Response(JSON.stringify({ e: 'url' }), { status: 500, headers: h });
+  var up2 = await fetch(ud.uploadUrl, {
+    method: 'POST',
+    headers: { 'Authorization': ud.authorizationToken, 'X-Bz-File-Name': fn, 'Content-Type': 'application/octet-stream', 'X-Bz-Content-Sha1': 'do_not_verify' },
+    body: buf
   });
-  var hfData = await hfRes.json();
-  return new Response(JSON.stringify(hfData), { headers: { 'Content-Type': 'application/json', ...cors } });
+  if (!up2.ok) return new Response(JSON.stringify({ e: 'b2' }), { status: 500, headers: h });
+  await sb('/fileshare', JSON.stringify({ code: code, filename: f.name, filesize: f.size, filetype: f.type || ext, storage_path: fn, uploaded_by: 'user' }), 'POST');
+  return new Response(JSON.stringify({ ok: true, code: code }), { headers: h });
+}
+
+async function dl(url, h) {
+  var c = url.searchParams.get('code');
+  if (!c) return new Response(JSON.stringify({ e: 'no code' }), { status: 400, headers: h });
+  var r = await sb('/fileshare?code=eq.' + c + '&select=*');
+  var d = await r.json();
+  if (!d || !d.length) return new Response(JSON.stringify({ e: '404' }), { status: 404, headers: h });
+  var ba = await b2_auth();
+  var id = await getBid(ba);
+  var ar = await fetch(ba.api + '/b2_get_download_authorization', {
+    method: 'POST',
+    headers: { 'Authorization': ba.t, 'Content-Type': 'application/json' },
+    body: '{"bucketId":"' + id + '","fileNamePrefix":"' + d[0].storage_path + '","validDurationInSeconds":3600}'
+  });
+  var ad = await ar.json();
+  return new Response(JSON.stringify({ fn: d[0].filename, sz: d[0].filesize, url: ba.dl + '/file/' + B2_BUCKET + '/' + d[0].storage_path + '?Authorization=' + ad.authorizationToken }), { headers: h });
+}
+
+async function ml(h) {
+  var r = await sb('/fileshare?order=created_at.desc');
+  var d = await r.json();
+  return new Response(JSON.stringify(d || []), { headers: h });
+}
+
+async function al(h) {
+  var r = await sb('/fileshare?order=created_at.desc');
+  var d = await r.json();
+  return new Response(JSON.stringify(d || []), { headers: h });
+}
+
+async function adel(url, h) {
+  var id = url.searchParams.get('id');
+  if (!id) return new Response(JSON.stringify({ e: 'no id' }), { status: 400, headers: h });
+  var r = await sb('/fileshare?id=eq.' + id + '&select=*');
+  var d = await r.json();
+  if (d && d.length && d[0].storage_path) {
+    var ba = await b2_auth();
+    var bid = await getBid(ba);
+    await fetch(ba.api + '/b2_delete_file_version', {
+      method: 'POST',
+      headers: { 'Authorization': ba.t, 'Content-Type': 'application/json' },
+      body: '{"fileName":"' + d[0].storage_path + '","fileId":""}'
+    }).catch(function() {});
+  }
+  await sb('/fileshare?id=eq.' + id, null, 'DELETE');
+  return new Response(JSON.stringify({ ok: true }), { headers: h });
+}
+
+async function hr(req, h) {
+  return new Response(JSON.stringify({ e: 'no' }), { status: 500, headers: h });
 }
