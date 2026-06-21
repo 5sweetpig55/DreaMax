@@ -82,7 +82,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 
 <script>
 (function(){
-  var WORKER_URL = 'https://old-hall-b586.3752703718.workers.dev';
+  var API_URL = '/api';
   var SUPABASE_URL = 'https://bunumbcdivevvtjvsuvk.supabase.co';
   var SUPABASE_ANON = 'sb_publishable_JIUEsQjSI-n2G5rBFeJDAA_jE48im34';
 
@@ -282,7 +282,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
       fd.append('file', file);
       fd.append('note', note);
       try{
-        var res = await fetch(WORKER_URL + '/upload', {
+        var res = await fetch(API_URL + '/upload', {
           method: 'POST', headers: { 'Authorization': 'Bearer ' + session.access_token }, body: fd
         });
         var txt = await res.text();
@@ -317,7 +317,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
     if(!code){ alert('请输入提取码'); return; }
 
     try{
-      var res = await fetch(WORKER_URL + '/download?code=' + code);
+      var res = await fetch(API_URL + '/download?code=' + code);
       var data = await res.json();
       if(data.e || data.error){
         downloadInfo.style.display = 'none';
@@ -342,7 +342,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
   async function loadMyRecords(){
     if(!session){ return; }
     try{
-      var res = await fetch(WORKER_URL + '/my/list', {
+      var res = await fetch(API_URL + '/my/list', {
         headers: { 'Authorization': 'Bearer ' + session.access_token }
       });
       var data = await res.json() || [];
@@ -375,7 +375,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
   async function loadAdmin(){
     if(!session) return;
     try{
-      var res = await fetch(WORKER_URL + '/admin/list', {
+      var res = await fetch(API_URL + '/admin/list', {
         headers: { 'Authorization': 'Bearer ' + session.access_token }
       });
       var data = await res.json() || [];
@@ -410,7 +410,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
         b.addEventListener('click', async function(){
           var id = b.getAttribute('data-id');
           if(!confirm('确定删除？')) return;
-          await fetch(WORKER_URL + '/admin/delete?id=' + id, {
+          await fetch(API_URL + '/admin/delete?id=' + id, {
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + session.access_token }
           });

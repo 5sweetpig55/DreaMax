@@ -47,7 +47,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 <script>
 (function(){
-  var WORKER_URL = 'https://old-hall-b586.3752703718.workers.dev';
+  var API_URL = '/api';
   var codeInput = document.getElementById('code-input');
   var btnGet = document.getElementById('btn-get');
   var errMsg = document.getElementById('err-msg');
@@ -72,17 +72,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     btnGet.textContent = '提取中...';
     btnGet.disabled = true;
 
-    fetch(WORKER_URL + '/download?code=' + code)
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d.error || d.e){ errMsg.textContent = '提取码无效'; errMsg.style.display='block'; btnGet.textContent='提取'; btnGet.disabled=false; return; }
+    // 先通过 /download 获取文件信息
+    fetch(API_URL + '/proxy?code=' + code)
+      .then(function(r){
+        var filename = r.headers.get('Content-Disposition') || '';
+        var match = filename.match(/filename="(.+)"/);
+        var name = match ? match[1] : ('file_' + code);
+        if(!r.ok || r.status !== 200){ throw new Error('not found'); }
         inputArea.style.display = 'none';
         dlArea.style.display = 'block';
-        dlFilename.textContent = d.filename || '未知文件';
-        dlFilesize.textContent = formatSize(d.filesize || 0);
-        // 用 Worker 代理下载，不走 B2 直链
-        dlBtn.href = WORKER_URL + '/proxy?code=' + code;
-        dlBtn.setAttribute('download', d.filename || 'download');
+        dlFilename.textContent = name;
+        dlFilesize.textContent = '';
+        dlBtn.href = API_URL + '/proxy?code=' + code;
+        dlBtn.setAttribute('download', name);
       })
       .catch(function(e){ errMsg.textContent = '获取失败，请重试'; errMsg.style.display='block'; })
       .finally(function(){ btnGet.textContent='提取'; btnGet.disabled=false; });

@@ -15,7 +15,7 @@ export default {
     try {
       if (path === '/upload' && mt === 'POST') return await up(request, env);
       if (path === '/download' && mt === 'GET') return await dl(url, env);
-      if (path === '/my/list' && mt === 'GET') return await ml(env);
+      if (path === '/my/list' && mt === 'GET') return await ml(request, env);
       if (path === '/admin/list' && mt === 'GET') return await al(env);
       if (path === '/admin/delete' && mt === 'DELETE') return await adel(url, env);
       if (path === '/proxy' && mt === 'GET') return await proxy(url, env);
@@ -85,7 +85,17 @@ async function up(req, env) {
   if (!up2.ok) return new Response(JSON.stringify({ error: uj }), { status: 500, headers: cr() });
 
   var note = fd.get('note') || '';
-  await sq(env, '/fileshare', JSON.stringify({ code, note: note, filename: f.name, filesize: f.size, filetype: f.type || ext, storage_path: fn, uploaded_by: 'user' }), 'POST');
+  var userEmail = 'unknown';
+  var authH = req.headers.get('Authorization');
+  if (authH) {
+    try {
+      var ur = await fetch(env.SUPABASE_URL + '/auth/v1/user', {
+        headers: { 'Authorization': 'Bearer ' + authH.replace('Bearer ', ''), 'apikey': env.SUPABASE_ANON }
+      });
+      if (ur.ok) { var ud = await ur.json(); userEmail = ud.email || 'unknown'; }
+    } catch(e) {}
+  }
+  await sq(env, '/fileshare', JSON.stringify({ code, note: note, filename: f.name, filesize: f.size, filetype: f.type || ext, storage_path: fn, uploaded_by: userEmail }), 'POST');
 
   return new Response(JSON.stringify({ success: true, code }), { headers: cr() });
 }
@@ -106,7 +116,22 @@ async function dl(url, env) {
   return new Response(JSON.stringify({ success: true, code: c, filename: d[0].filename, filesize: d[0].filesize, url: a.dl + '/file/' + env.B2_BUCKET + '/' + d[0].storage_path + '?Authorization=' + encodeURIComponent(ad.authorizationToken) }), { headers: cr() });
 }
 
-async function ml(env) { var r = await sq(env, '/fileshare?order=created_at.desc'); var d = await r.json(); return new Response(JSON.stringify(d || []), { headers: cr() }); }
+async function ml(env, req) {
+  var userEmail = null;
+  var authH = req.headers.get('Authorization');
+  if (authH) {
+    try {
+      var ur = await fetch(env.SUPABASE_URL + '/auth/v1/user', {
+        headers: { 'Authorization': 'Bearer ' + authH.replace('Bearer ', ''), 'apikey': env.SUPABASE_ANON }
+      });
+      if (ur.ok) { var ud = await ur.json(); userEmail = ud.email; }
+    } catch(e) {}
+  }
+  if (!userEmail) return new Response(JSON.stringify({ error: 'no auth' }), { status: 401, headers: cr() });
+  var r = await sq(env, '/fileshare?uploaded_by=eq.' + encodeURIComponent(userEmail) + '&order=created_at.desc');
+  var d = await r.json();
+  return new Response(JSON.stringify(d || []), { headers: cr() });
+}
 async function al(env) { var r = await sq(env, '/fileshare?order=created_at.desc'); var d = await r.json(); return new Response(JSON.stringify(d || []), { headers: cr() }); }
 async function adel(url, env) { var id = url.searchParams.get('id'); if (!id) return new Response(JSON.stringify({ error: 'no id' }), { status: 400, headers: cr() }); await sq(env, '/fileshare?id=eq.' + id, null, 'DELETE'); return new Response(JSON.stringify({ success: true }), { headers: cr() }); }
 async function proxy(url, env) {
